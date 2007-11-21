@@ -1,6 +1,6 @@
 dnl check_smlnj_heap_suffix.m4
 dnl
-dnl COPYRIGHT (c) 2000 Bell Labs, Lucent Technologies.
+dnl COPYRIGHT (c) 2006 The SML/NJ Fellowship.
 dnl
 dnl @synopsis CHECK_SMLNJ_HEAP_SUFFIX(ACTION-IF-UNKNOWN)
 dnl
@@ -11,8 +11,8 @@ dnl the ACTION-IF-UNKNOWN.  Upon successful execution, this macro defines the
 dnl shell variables SMLNJ_ARCH, SMLNJ_OPSYS, and SMLNJ_HEAP_SUFFIX, and it
 dnl does an AC_SUBST on these variables.
 dnl 
-dnl @version $Id: check_smlnj_heap_suffix.m4,v 1.2 2001/05/25 03:52:47 jhr Exp $
-dnl @author John Reppy <jhr@research.bell-labs.com>
+dnl @version $Id: check_smlnj_heap_suffix.m4,v 1.2 2007/05/09 17:48:52 jhr Exp $
+dnl @author John Reppy <http://www.cs.uchicago.edu/~jhr>
 dnl
 AC_DEFUN(CHECK_SMLNJ_HEAP_SUFFIX, [
   AC_REQUIRE([AC_CANONICAL_HOST])
@@ -21,7 +21,7 @@ AC_DEFUN(CHECK_SMLNJ_HEAP_SUFFIX, [
     alpha*:osf4*)	SMLNJ_ARCH=alpha32;	SMLNJ_OPSYS=dunix;;
     hppa*:hpux9*)	SMLNJ_ARCH=hppa;	SMLNJ_OPSYS=hpux9;;
     hppa*:hpux10*)	SMLNJ_ARCH=hppa;	SMLNJ_OPSYS=hpux;;
-    i386:solaris3)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=solaris;;
+    i386:darwin*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=darwin;;
     i386:freebsd*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=freebsd;;
     i486:freebsd*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=freebsd;;
     i586:freebsd*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=freebsd;;
@@ -34,6 +34,7 @@ AC_DEFUN(CHECK_SMLNJ_HEAP_SUFFIX, [
     i486:netbsd*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=netbsd;;
     i586:netbsd*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=netbsd;;
     i686:netbsd*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=netbsd;;
+    i386:solaris3)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=solaris;;
     mips:irix4*)	SMLNJ_ARCH=mipseb;	SMLNJ_OPSYS=irix4; HEAP_OPSYS=irix;;
     mips:irix5*)	SMLNJ_ARCH=mipseb;	SMLNJ_OPSYS=irix5; HEAP_OPSYS=irix;;
     mips:irix6*)	SMLNJ_ARCH=mipseb;	SMLNJ_OPSYS=irix6; HEAP_OPSYS=irix;;
@@ -42,6 +43,7 @@ AC_DEFUN(CHECK_SMLNJ_HEAP_SUFFIX, [
     rs6000:aix*)	SMLNJ_ARCH=rs6000;	SMLNJ_OPSYS=aix;;
     sparc:solaris2*)	SMLNJ_ARCH=sparc;	SMLNJ_OPSYS=sunos;;
     sparc:solaris3*)	SMLNJ_ARCH=sparc;	SMLNJ_OPSYS=solaris;;
+    x86_64:linux*)	SMLNJ_ARCH=x86;		SMLNJ_OPSYS=linux;;
     *) $1 ;;
   esac
   if test z$SMLNJ_ARCH != z -a z$SMLNJ_OPSYS != z ; then
