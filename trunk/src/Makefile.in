@@ -1,0 +1,42 @@
+# Makefile for ml-idl tool
+#
+# COPYRIGHT (c) 2000 Bell Labs, Lucent Technologies.
+#
+# @configure_input@
+#
+
+SHELL =			/bin/sh
+INSTALL_WRAPPER =	@INSTALL_SMLNJ_WRAPPER@
+SML =			@SMLNJ_CMD@
+BUILD_ML =		@BUILD_ML@
+BUILD_ML_FLAGS =	@BUILD_ML_FLAGS@
+
+PROGRAM =		ml-idl
+HEAP_SUFFIX =		@SMLNJ_HEAP_SUFFIX@
+HEAP_IMAGE =		$(PROGRAM).$(HEAP_SUFFIX)
+BINDIR =		@LOCAL_BINDIR@
+
+PREFIX =		@prefix@
+INSTALL_BINDIR =	$(PREFIX)/bin
+
+build:		local-install
+
+local-install:	$(HEAP_IMAGE)
+	$(INSTALL_WRAPPER) $(PROGRAM) $(BINDIR)
+	rm -f $(HEAP_IMAGE)
+
+install:	$(HEAP_IMAGE)
+	$(INSTALL_WRAPPER) $(PROGRAM) $(INSTALL_BINDIR)
+
+$(HEAP_IMAGE):
+	$(BUILD_ML) $(BUILD_ML_FLAGS) sources.cm Main.main ml-idl
+
+clean:
+	rm -f $(HEAP_IMAGE)
+	find . \( -name CM -exec rm -rf {} \; -prune -print \)
+
+distclean:	clean
+	rm -f Makefile sources.cm
+	rm -f Main/Mainfile Main/sources.cm
+	rm -f TargetMoby/sources.cm
+

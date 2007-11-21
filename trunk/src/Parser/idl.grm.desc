@@ -1,0 +1,4576 @@
+18 rules not reduced
+
+warning: rule <Plus_List_2 : STRING List_2 > will never be reduced
+warning: rule <List_2 : COMMA STRING List_2 > will never be reduced
+warning: rule <List_2 : > will never be reduced
+warning: rule <Plus_List_18 : attr_var List_18 > will never be reduced
+warning: rule <List_18 : COMMA attr_var List_18 > will never be reduced
+warning: rule <List_18 : > will never be reduced
+warning: rule <Plus_List_19 : attr_var List_19 > will never be reduced
+warning: rule <List_19 : COMMA attr_var List_19 > will never be reduced
+warning: rule <List_19 : > will never be reduced
+warning: rule <Plus_List_20 : attr_var List_20 > will never be reduced
+warning: rule <List_20 : COMMA attr_var List_20 > will never be reduced
+warning: rule <List_20 : > will never be reduced
+warning: rule <Plus_List_21 : attr_var List_21 > will never be reduced
+warning: rule <List_21 : COMMA attr_var List_21 > will never be reduced
+warning: rule <List_21 : > will never be reduced
+warning: rule <Plus_List_22 : attr_var List_22 > will never be reduced
+warning: rule <List_22 : COMMA attr_var List_22 > will never be reduced
+warning: rule <List_22 : > will never be reduced
+
+state 0:
+
+	start : . List_1 
+
+	ID	shift 41
+	LBRACK	shift 40
+	KW_const	shift 39
+	KW_typedef	shift 38
+	KW_struct	shift 37
+	KW_union	shift 36
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_structure	shift 22
+	KW_sml_signature	shift 21
+	KW_clib_name	shift 20
+	KW_clib_date	shift 19
+	KW_clib_version	shift 18
+	KW_sml_value	shift 17
+	KW_cpp_quote	shift 16
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	start	goto 371
+	top_level	goto 13
+	declaration	goto 12
+	simple_type_spec	goto 11
+	tagged_declarator	goto 10
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	tagged_struct_declarator	goto 4
+	tagged_union_declarator	goto 3
+	tagged_union	goto 2
+	List_1	goto 1
+
+	.	reduce by rule 149
+
+
+state 1:
+
+	start : List_1 .  (reduce by rule 0)
+
+
+
+	.	reduce by rule 0
+
+
+state 2:
+
+	tagged_union_declarator : tagged_union .  (reduce by rule 88)
+
+
+
+	.	reduce by rule 88
+
+
+state 3:
+
+	tagged_declarator : tagged_union_declarator .  (reduce by rule 45)
+
+
+
+	.	reduce by rule 45
+
+
+state 4:
+
+	tagged_declarator : tagged_struct_declarator .  (reduce by rule 44)
+
+
+
+	.	reduce by rule 44
+
+
+state 5:
+
+	simple_type_spec : char_type .  (reduce by rule 32)
+
+
+
+	.	reduce by rule 32
+
+
+state 6:
+
+	primitive_integer_type : unsigned_integer .  (reduce by rule 54)
+
+
+
+	.	reduce by rule 54
+
+
+state 7:
+
+	primitive_integer_type : signed_integer .  (reduce by rule 53)
+
+
+
+	.	reduce by rule 53
+
+
+state 8:
+
+	integer_type : primitive_integer_type .  (reduce by rule 46)
+
+
+
+	.	reduce by rule 46
+
+
+state 9:
+
+	simple_type_spec : integer_type .  (reduce by rule 31)
+
+
+
+	.	reduce by rule 31
+
+
+state 10:
+
+	declaration : tagged_declarator . SEMI 
+
+	SEMI	shift 42
+
+
+	.	error
+
+
+state 11:
+
+	declaration : simple_type_spec . ID param_declarators SEMI 
+
+	ID	shift 43
+
+
+	.	error
+
+
+state 12:
+
+	top_level : declaration .  (reduce by rule 1)
+
+
+
+	.	reduce by rule 1
+
+
+state 13:
+
+	List_1 : top_level . List_1 
+
+	ID	shift 41
+	LBRACK	shift 40
+	KW_const	shift 39
+	KW_typedef	shift 38
+	KW_struct	shift 37
+	KW_union	shift 36
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_structure	shift 22
+	KW_sml_signature	shift 21
+	KW_clib_name	shift 20
+	KW_clib_date	shift 19
+	KW_clib_version	shift 18
+	KW_sml_value	shift 17
+	KW_cpp_quote	shift 16
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	top_level	goto 13
+	declaration	goto 12
+	simple_type_spec	goto 11
+	tagged_declarator	goto 10
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	tagged_struct_declarator	goto 4
+	tagged_union_declarator	goto 3
+	tagged_union	goto 2
+	List_1	goto 44
+
+	.	reduce by rule 149
+
+
+state 14:
+
+	primitive_integer_type : KW_sml_word .  (reduce by rule 56)
+
+
+
+	.	reduce by rule 56
+
+
+state 15:
+
+	primitive_integer_type : KW_sml_int .  (reduce by rule 55)
+
+
+
+	.	reduce by rule 55
+
+
+state 16:
+
+	top_level : KW_cpp_quote . LPAREN STRING RPAREN SEMI 
+
+	LPAREN	shift 45
+
+
+	.	error
+
+
+state 17:
+
+	simple_type_spec : KW_sml_value .  (reduce by rule 38)
+
+
+
+	.	reduce by rule 38
+
+
+state 18:
+
+	top_level : KW_clib_version . LPAREN STRING RPAREN SEMI 
+
+	LPAREN	shift 46
+
+
+	.	error
+
+
+state 19:
+
+	top_level : KW_clib_date . LPAREN STRING RPAREN SEMI 
+
+	LPAREN	shift 47
+
+
+	.	error
+
+
+state 20:
+
+	top_level : KW_clib_name . LPAREN STRING RPAREN SEMI 
+
+	LPAREN	shift 48
+
+
+	.	error
+
+
+state 21:
+
+	top_level : KW_sml_signature . LPAREN STRING RPAREN SEMI 
+
+	LPAREN	shift 49
+
+
+	.	error
+
+
+state 22:
+
+	top_level : KW_sml_structure . LPAREN STRING RPAREN SEMI 
+
+	LPAREN	shift 50
+
+
+	.	error
+
+
+state 23:
+
+	simple_type_spec : KW_string .  (reduce by rule 36)
+
+
+
+	.	reduce by rule 36
+
+
+state 24:
+
+	simple_type_spec : KW_void .  (reduce by rule 35)
+
+
+
+	.	reduce by rule 35
+
+
+state 25:
+
+	simple_type_spec : KW_byte .  (reduce by rule 34)
+
+
+
+	.	reduce by rule 34
+
+
+state 26:
+
+	simple_type_spec : KW_boolean .  (reduce by rule 33)
+
+
+
+	.	reduce by rule 33
+
+
+state 27:
+
+	char_type : KW_char .  (reduce by rule 78)
+
+
+
+	.	reduce by rule 78
+
+
+state 28:
+
+	signed_integer : KW_small .  (reduce by rule 61)
+	signed_integer : KW_small . KW_int 
+	unsigned_integer : KW_small . KW_unsigned 
+	unsigned_integer : KW_small . KW_unsigned KW_int 
+
+	KW_unsigned	shift 52
+	KW_int	shift 51
+
+
+	.	reduce by rule 61
+
+
+state 29:
+
+	signed_integer : KW_short .  (reduce by rule 59)
+	signed_integer : KW_short . KW_int 
+	unsigned_integer : KW_short . KW_unsigned 
+	unsigned_integer : KW_short . KW_unsigned KW_int 
+
+	KW_unsigned	shift 54
+	KW_int	shift 53
+
+
+	.	reduce by rule 59
+
+
+state 30:
+
+	signed_integer : KW_long .  (reduce by rule 57)
+	signed_integer : KW_long . KW_int 
+	unsigned_integer : KW_long . KW_unsigned 
+	unsigned_integer : KW_long . KW_unsigned KW_int 
+
+	KW_unsigned	shift 56
+	KW_int	shift 55
+
+
+	.	reduce by rule 57
+
+
+state 31:
+
+	signed_integer : KW_int .  (reduce by rule 63)
+
+
+
+	.	reduce by rule 63
+
+
+state 32:
+
+	integer_type : KW_unsigned . KW_hyper 
+	integer_type : KW_unsigned . KW_hyper KW_int 
+	unsigned_integer : KW_unsigned . KW_long 
+	unsigned_integer : KW_unsigned . KW_long KW_int 
+	unsigned_integer : KW_unsigned . KW_short 
+	unsigned_integer : KW_unsigned . KW_short KW_int 
+	unsigned_integer : KW_unsigned . KW_small 
+	unsigned_integer : KW_unsigned . KW_small KW_int 
+	unsigned_integer : KW_unsigned . KW_int 
+	char_type : KW_unsigned . KW_char 
+
+	KW_hyper	shift 62
+	KW_int	shift 61
+	KW_long	shift 60
+	KW_short	shift 59
+	KW_small	shift 58
+	KW_char	shift 57
+
+
+	.	error
+
+
+state 33:
+
+	integer_type : KW_hyper .  (reduce by rule 47)
+	integer_type : KW_hyper . KW_int 
+	integer_type : KW_hyper . KW_unsigned 
+	integer_type : KW_hyper . KW_unsigned KW_int 
+
+	KW_unsigned	shift 64
+	KW_int	shift 63
+
+
+	.	reduce by rule 47
+
+
+state 34:
+
+	simple_type_spec : KW_double .  (reduce by rule 30)
+
+
+
+	.	reduce by rule 30
+
+
+state 35:
+
+	simple_type_spec : KW_float .  (reduce by rule 29)
+
+
+
+	.	reduce by rule 29
+
+
+state 36:
+
+	tagged_union_declarator : KW_union . ID 
+	tagged_union : KW_union . ID KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union . ID KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+	tagged_union : KW_union . ID LBRACE union_body_ne RBRACE 
+
+	ID	shift 65
+
+
+	.	error
+
+
+state 37:
+
+	tagged_struct_declarator : KW_struct . ID 
+	tagged_struct_declarator : KW_struct . ID LBRACE Plus_List_9 RBRACE 
+
+	ID	shift 66
+
+
+	.	error
+
+
+state 38:
+
+	declaration : KW_typedef . type_spec Plus_List_4 SEMI 
+	declaration : KW_typedef . LBRACK Plus_List_3 RBRACK type_spec Plus_List_4 SEMI 
+
+	ID	shift 41
+	LBRACK	shift 75
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 71
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+
+	.	error
+
+
+state 39:
+
+	declaration : KW_const . const_type_spec ID EQSIGN const_exp SEMI 
+
+	KW_unsigned	shift 81
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 80
+	KW_boolean	shift 79
+	KW_void	shift 78
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	const_type_spec	goto 77
+	primitive_integer_type	goto 76
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+
+	.	error
+
+
+state 40:
+
+	declaration : LBRACK . Plus_List_5 RBRACK simple_type_spec ID param_declarators SEMI 
+
+	KW_string	shift 95
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_sml_type	shift 91
+	KW_sml_context	shift 90
+	KW_exclude	shift 89
+	KW_pre	shift 88
+	KW_post	shift 87
+	KW_call	shift 86
+
+	usage_attribute	goto 85
+	ptr_attribute	goto 84
+	operation_attribute	goto 83
+	Plus_List_5	goto 82
+
+	.	error
+
+
+state 41:
+
+	simple_type_spec : ID .  (reduce by rule 37)
+
+
+
+	.	reduce by rule 37
+
+
+state 42:
+
+	declaration : tagged_declarator SEMI .  (reduce by rule 11)
+
+
+
+	.	reduce by rule 11
+
+
+state 43:
+
+	declaration : simple_type_spec ID . param_declarators SEMI 
+
+	LPAREN	shift 97
+
+	param_declarators	goto 96
+
+	.	error
+
+
+state 44:
+
+	List_1 : top_level List_1 .  (reduce by rule 148)
+
+
+
+	.	reduce by rule 148
+
+
+state 45:
+
+	top_level : KW_cpp_quote LPAREN . STRING RPAREN SEMI 
+
+	STRING	shift 98
+
+
+	.	error
+
+
+state 46:
+
+	top_level : KW_clib_version LPAREN . STRING RPAREN SEMI 
+
+	STRING	shift 99
+
+
+	.	error
+
+
+state 47:
+
+	top_level : KW_clib_date LPAREN . STRING RPAREN SEMI 
+
+	STRING	shift 100
+
+
+	.	error
+
+
+state 48:
+
+	top_level : KW_clib_name LPAREN . STRING RPAREN SEMI 
+
+	STRING	shift 101
+
+
+	.	error
+
+
+state 49:
+
+	top_level : KW_sml_signature LPAREN . STRING RPAREN SEMI 
+
+	STRING	shift 102
+
+
+	.	error
+
+
+state 50:
+
+	top_level : KW_sml_structure LPAREN . STRING RPAREN SEMI 
+
+	STRING	shift 103
+
+
+	.	error
+
+
+state 51:
+
+	signed_integer : KW_small KW_int .  (reduce by rule 62)
+
+
+
+	.	reduce by rule 62
+
+
+state 52:
+
+	unsigned_integer : KW_small KW_unsigned .  (reduce by rule 75)
+	unsigned_integer : KW_small KW_unsigned . KW_int 
+
+	KW_int	shift 104
+
+
+	.	reduce by rule 75
+
+
+state 53:
+
+	signed_integer : KW_short KW_int .  (reduce by rule 60)
+
+
+
+	.	reduce by rule 60
+
+
+state 54:
+
+	unsigned_integer : KW_short KW_unsigned .  (reduce by rule 73)
+	unsigned_integer : KW_short KW_unsigned . KW_int 
+
+	KW_int	shift 105
+
+
+	.	reduce by rule 73
+
+
+state 55:
+
+	signed_integer : KW_long KW_int .  (reduce by rule 58)
+
+
+
+	.	reduce by rule 58
+
+
+state 56:
+
+	unsigned_integer : KW_long KW_unsigned .  (reduce by rule 71)
+	unsigned_integer : KW_long KW_unsigned . KW_int 
+
+	KW_int	shift 106
+
+
+	.	reduce by rule 71
+
+
+state 57:
+
+	char_type : KW_unsigned KW_char .  (reduce by rule 77)
+
+
+
+	.	reduce by rule 77
+
+
+state 58:
+
+	unsigned_integer : KW_unsigned KW_small .  (reduce by rule 68)
+	unsigned_integer : KW_unsigned KW_small . KW_int 
+
+	KW_int	shift 107
+
+
+	.	reduce by rule 68
+
+
+state 59:
+
+	unsigned_integer : KW_unsigned KW_short .  (reduce by rule 66)
+	unsigned_integer : KW_unsigned KW_short . KW_int 
+
+	KW_int	shift 108
+
+
+	.	reduce by rule 66
+
+
+state 60:
+
+	unsigned_integer : KW_unsigned KW_long .  (reduce by rule 64)
+	unsigned_integer : KW_unsigned KW_long . KW_int 
+
+	KW_int	shift 109
+
+
+	.	reduce by rule 64
+
+
+state 61:
+
+	unsigned_integer : KW_unsigned KW_int .  (reduce by rule 70)
+
+
+
+	.	reduce by rule 70
+
+
+state 62:
+
+	integer_type : KW_unsigned KW_hyper .  (reduce by rule 51)
+	integer_type : KW_unsigned KW_hyper . KW_int 
+
+	KW_int	shift 110
+
+
+	.	reduce by rule 51
+
+
+state 63:
+
+	integer_type : KW_hyper KW_int .  (reduce by rule 48)
+
+
+
+	.	reduce by rule 48
+
+
+state 64:
+
+	integer_type : KW_hyper KW_unsigned .  (reduce by rule 49)
+	integer_type : KW_hyper KW_unsigned . KW_int 
+
+	KW_int	shift 111
+
+
+	.	reduce by rule 49
+
+
+state 65:
+
+	tagged_union_declarator : KW_union ID .  (reduce by rule 87)
+	tagged_union : KW_union ID . KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union ID . KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+	tagged_union : KW_union ID . LBRACE union_body_ne RBRACE 
+
+	LBRACE	shift 113
+	KW_switch	shift 112
+
+
+	.	reduce by rule 87
+
+
+state 66:
+
+	tagged_struct_declarator : KW_struct ID .  (reduce by rule 83)
+	tagged_struct_declarator : KW_struct ID . LBRACE Plus_List_9 RBRACE 
+
+	LBRACE	shift 114
+
+
+	.	reduce by rule 83
+
+
+state 67:
+
+	constructed_type_spec : union_type .  (reduce by rule 80)
+
+
+
+	.	reduce by rule 80
+
+
+state 68:
+
+	type_spec : constructed_type_spec .  (reduce by rule 28)
+
+
+
+	.	reduce by rule 28
+
+
+state 69:
+
+	constructed_type_spec : tagged_declarator .  (reduce by rule 82)
+
+
+
+	.	reduce by rule 82
+
+
+state 70:
+
+	type_spec : simple_type_spec .  (reduce by rule 27)
+
+
+
+	.	reduce by rule 27
+
+
+state 71:
+
+	declaration : KW_typedef type_spec . Plus_List_4 SEMI 
+
+	ASTERISK	shift 118
+
+	declarator	goto 117
+	Plus_List_4	goto 116
+	List_6	goto 115
+
+	.	reduce by rule 163
+
+
+state 72:
+
+	tagged_union_declarator : KW_union . ID 
+	union_type : KW_union . KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	union_type : KW_union . KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+	union_type : KW_union . LBRACE union_body_ne RBRACE 
+	tagged_union : KW_union . ID KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union . ID KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+	tagged_union : KW_union . ID LBRACE union_body_ne RBRACE 
+
+	ID	shift 65
+	LBRACE	shift 120
+	KW_switch	shift 119
+
+
+	.	error
+
+
+state 73:
+
+	constructed_type_spec : KW_struct . LBRACE Plus_List_7 RBRACE 
+	tagged_struct_declarator : KW_struct . ID 
+	tagged_struct_declarator : KW_struct . ID LBRACE Plus_List_9 RBRACE 
+
+	ID	shift 66
+	LBRACE	shift 121
+
+
+	.	error
+
+
+state 74:
+
+	constructed_type_spec : KW_enum . LBRACE Plus_List_8 RBRACE 
+
+	LBRACE	shift 122
+
+
+	.	error
+
+
+state 75:
+
+	declaration : KW_typedef LBRACK . Plus_List_3 RBRACK type_spec Plus_List_4 SEMI 
+
+	KW_string	shift 95
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_sml_type	shift 91
+	KW_exclude	shift 130
+	KW_abstract	shift 129
+	KW_switch_type	shift 128
+
+	union_type_switch_attr	goto 127
+	type_attribute	goto 126
+	usage_attribute	goto 125
+	ptr_attribute	goto 124
+	Plus_List_3	goto 123
+
+	.	error
+
+
+state 76:
+
+	const_type_spec : primitive_integer_type .  (reduce by rule 14)
+
+
+
+	.	reduce by rule 14
+
+
+state 77:
+
+	declaration : KW_const const_type_spec . ID EQSIGN const_exp SEMI 
+
+	ID	shift 131
+
+
+	.	error
+
+
+state 78:
+
+	const_type_spec : KW_void . ASTERISK 
+
+	ASTERISK	shift 132
+
+
+	.	error
+
+
+state 79:
+
+	const_type_spec : KW_boolean .  (reduce by rule 16)
+
+
+
+	.	reduce by rule 16
+
+
+state 80:
+
+	const_type_spec : KW_char .  (reduce by rule 15)
+	const_type_spec : KW_char . ASTERISK 
+
+	ASTERISK	shift 133
+
+
+	.	reduce by rule 15
+
+
+state 81:
+
+	unsigned_integer : KW_unsigned . KW_long 
+	unsigned_integer : KW_unsigned . KW_long KW_int 
+	unsigned_integer : KW_unsigned . KW_short 
+	unsigned_integer : KW_unsigned . KW_short KW_int 
+	unsigned_integer : KW_unsigned . KW_small 
+	unsigned_integer : KW_unsigned . KW_small KW_int 
+	unsigned_integer : KW_unsigned . KW_int 
+
+	KW_int	shift 61
+	KW_long	shift 60
+	KW_short	shift 59
+	KW_small	shift 58
+
+
+	.	error
+
+
+state 82:
+
+	declaration : LBRACK Plus_List_5 . RBRACK simple_type_spec ID param_declarators SEMI 
+
+	RBRACK	shift 134
+
+
+	.	error
+
+
+state 83:
+
+	Plus_List_5 : operation_attribute . List_5 
+
+	COMMA	shift 136
+
+	List_5	goto 135
+
+	.	reduce by rule 161
+
+
+state 84:
+
+	operation_attribute : ptr_attribute .  (reduce by rule 142)
+
+
+
+	.	reduce by rule 142
+
+
+state 85:
+
+	operation_attribute : usage_attribute .  (reduce by rule 141)
+
+
+
+	.	reduce by rule 141
+
+
+state 86:
+
+	operation_attribute : KW_call . LPAREN STRING RPAREN 
+
+	LPAREN	shift 137
+
+
+	.	error
+
+
+state 87:
+
+	operation_attribute : KW_post . LPAREN STRING RPAREN 
+
+	LPAREN	shift 138
+
+
+	.	error
+
+
+state 88:
+
+	operation_attribute : KW_pre . LPAREN STRING RPAREN 
+
+	LPAREN	shift 139
+
+
+	.	error
+
+
+state 89:
+
+	operation_attribute : KW_exclude .  (reduce by rule 147)
+
+
+
+	.	reduce by rule 147
+
+
+state 90:
+
+	operation_attribute : KW_sml_context .  (reduce by rule 143)
+
+
+
+	.	reduce by rule 143
+
+
+state 91:
+
+	usage_attribute : KW_sml_type . LPAREN STRING RPAREN 
+
+	LPAREN	shift 140
+
+
+	.	error
+
+
+state 92:
+
+	ptr_attribute : KW_ptr .  (reduce by rule 140)
+
+
+
+	.	reduce by rule 140
+
+
+state 93:
+
+	ptr_attribute : KW_unique .  (reduce by rule 139)
+
+
+
+	.	reduce by rule 139
+
+
+state 94:
+
+	ptr_attribute : KW_ref .  (reduce by rule 138)
+
+
+
+	.	reduce by rule 138
+
+
+state 95:
+
+	usage_attribute : KW_string .  (reduce by rule 130)
+
+
+
+	.	reduce by rule 130
+
+
+state 96:
+
+	declaration : simple_type_spec ID param_declarators . SEMI 
+
+	SEMI	shift 141
+
+
+	.	error
+
+
+state 97:
+
+	param_declarators : LPAREN . RPAREN 
+	param_declarators : LPAREN . KW_void RPAREN 
+	param_declarators : LPAREN . Plus_List_16 RPAREN 
+
+	RPAREN	shift 146
+	LBRACK	shift 145
+	KW_void	shift 144
+
+	param_declarator	goto 143
+	Plus_List_16	goto 142
+
+	.	error
+
+
+state 98:
+
+	top_level : KW_cpp_quote LPAREN STRING . RPAREN SEMI 
+
+	RPAREN	shift 147
+
+
+	.	error
+
+
+state 99:
+
+	top_level : KW_clib_version LPAREN STRING . RPAREN SEMI 
+
+	RPAREN	shift 148
+
+
+	.	error
+
+
+state 100:
+
+	top_level : KW_clib_date LPAREN STRING . RPAREN SEMI 
+
+	RPAREN	shift 149
+
+
+	.	error
+
+
+state 101:
+
+	top_level : KW_clib_name LPAREN STRING . RPAREN SEMI 
+
+	RPAREN	shift 150
+
+
+	.	error
+
+
+state 102:
+
+	top_level : KW_sml_signature LPAREN STRING . RPAREN SEMI 
+
+	RPAREN	shift 151
+
+
+	.	error
+
+
+state 103:
+
+	top_level : KW_sml_structure LPAREN STRING . RPAREN SEMI 
+
+	RPAREN	shift 152
+
+
+	.	error
+
+
+state 104:
+
+	unsigned_integer : KW_small KW_unsigned KW_int .  (reduce by rule 76)
+
+
+
+	.	reduce by rule 76
+
+
+state 105:
+
+	unsigned_integer : KW_short KW_unsigned KW_int .  (reduce by rule 74)
+
+
+
+	.	reduce by rule 74
+
+
+state 106:
+
+	unsigned_integer : KW_long KW_unsigned KW_int .  (reduce by rule 72)
+
+
+
+	.	reduce by rule 72
+
+
+state 107:
+
+	unsigned_integer : KW_unsigned KW_small KW_int .  (reduce by rule 69)
+
+
+
+	.	reduce by rule 69
+
+
+state 108:
+
+	unsigned_integer : KW_unsigned KW_short KW_int .  (reduce by rule 67)
+
+
+
+	.	reduce by rule 67
+
+
+state 109:
+
+	unsigned_integer : KW_unsigned KW_long KW_int .  (reduce by rule 65)
+
+
+
+	.	reduce by rule 65
+
+
+state 110:
+
+	integer_type : KW_unsigned KW_hyper KW_int .  (reduce by rule 52)
+
+
+
+	.	reduce by rule 52
+
+
+state 111:
+
+	integer_type : KW_hyper KW_unsigned KW_int .  (reduce by rule 50)
+
+
+
+	.	reduce by rule 50
+
+
+state 112:
+
+	tagged_union : KW_union ID KW_switch . LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union ID KW_switch . LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+
+	LPAREN	shift 153
+
+
+	.	error
+
+
+state 113:
+
+	tagged_union : KW_union ID LBRACE . union_body_ne RBRACE 
+
+	LBRACK	shift 157
+
+	union_body_ne	goto 156
+	union_case_ne	goto 155
+	Plus_List_13	goto 154
+
+	.	error
+
+
+state 114:
+
+	tagged_struct_declarator : KW_struct ID LBRACE . Plus_List_9 RBRACE 
+
+	ID	shift 41
+	LBRACK	shift 161
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 159
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	Plus_List_9	goto 158
+
+	.	error
+
+
+state 115:
+
+	declarator : List_6 . direct_declarator 
+
+	ID	shift 166
+	LPAREN	shift 165
+
+	direct_declarator	goto 164
+	array_declarator	goto 163
+	function_declarator	goto 162
+
+	.	error
+
+
+state 116:
+
+	declaration : KW_typedef type_spec Plus_List_4 . SEMI 
+
+	SEMI	shift 167
+
+
+	.	error
+
+
+state 117:
+
+	Plus_List_4 : declarator . List_4 
+
+	COMMA	shift 169
+
+	List_4	goto 168
+
+	.	reduce by rule 158
+
+
+state 118:
+
+	List_6 : ASTERISK . List_6 
+
+	ASTERISK	shift 118
+
+	List_6	goto 170
+
+	.	reduce by rule 163
+
+
+state 119:
+
+	union_type : KW_union KW_switch . LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	union_type : KW_union KW_switch . LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+
+	LPAREN	shift 171
+
+
+	.	error
+
+
+state 120:
+
+	union_type : KW_union LBRACE . union_body_ne RBRACE 
+
+	LBRACK	shift 157
+
+	union_body_ne	goto 172
+	union_case_ne	goto 155
+	Plus_List_13	goto 154
+
+	.	error
+
+
+state 121:
+
+	constructed_type_spec : KW_struct LBRACE . Plus_List_7 RBRACE 
+
+	ID	shift 41
+	LBRACK	shift 161
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 174
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	Plus_List_7	goto 173
+
+	.	error
+
+
+state 122:
+
+	constructed_type_spec : KW_enum LBRACE . Plus_List_8 RBRACE 
+
+	ID	shift 177
+
+	identifier	goto 176
+	Plus_List_8	goto 175
+
+	.	error
+
+
+state 123:
+
+	declaration : KW_typedef LBRACK Plus_List_3 . RBRACK type_spec Plus_List_4 SEMI 
+
+	RBRACK	shift 178
+
+
+	.	error
+
+
+state 124:
+
+	type_attribute : ptr_attribute .  (reduce by rule 127)
+
+
+
+	.	reduce by rule 127
+
+
+state 125:
+
+	type_attribute : usage_attribute .  (reduce by rule 125)
+
+
+
+	.	reduce by rule 125
+
+
+state 126:
+
+	Plus_List_3 : type_attribute . List_3 
+
+	COMMA	shift 180
+
+	List_3	goto 179
+
+	.	reduce by rule 155
+
+
+state 127:
+
+	type_attribute : union_type_switch_attr .  (reduce by rule 126)
+
+
+
+	.	reduce by rule 126
+
+
+state 128:
+
+	union_type_switch_attr : KW_switch_type . LPAREN switch_type_spec RPAREN 
+
+	LPAREN	shift 181
+
+
+	.	error
+
+
+state 129:
+
+	type_attribute : KW_abstract .  (reduce by rule 129)
+
+
+
+	.	reduce by rule 129
+
+
+state 130:
+
+	type_attribute : KW_exclude .  (reduce by rule 128)
+
+
+
+	.	reduce by rule 128
+
+
+state 131:
+
+	declaration : KW_const const_type_spec ID . EQSIGN const_exp SEMI 
+
+	EQSIGN	shift 182
+
+
+	.	error
+
+
+state 132:
+
+	const_type_spec : KW_void ASTERISK .  (reduce by rule 17)
+
+
+
+	.	reduce by rule 17
+
+
+state 133:
+
+	const_type_spec : KW_char ASTERISK .  (reduce by rule 18)
+
+
+
+	.	reduce by rule 18
+
+
+state 134:
+
+	declaration : LBRACK Plus_List_5 RBRACK . simple_type_spec ID param_declarators SEMI 
+
+	ID	shift 41
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	simple_type_spec	goto 183
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+
+	.	error
+
+
+state 135:
+
+	Plus_List_5 : operation_attribute List_5 .  (reduce by rule 159)
+
+
+
+	.	reduce by rule 159
+
+
+state 136:
+
+	List_5 : COMMA . operation_attribute List_5 
+
+	KW_string	shift 95
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_sml_type	shift 91
+	KW_sml_context	shift 90
+	KW_exclude	shift 89
+	KW_pre	shift 88
+	KW_post	shift 87
+	KW_call	shift 86
+
+	usage_attribute	goto 85
+	ptr_attribute	goto 84
+	operation_attribute	goto 184
+
+	.	error
+
+
+state 137:
+
+	operation_attribute : KW_call LPAREN . STRING RPAREN 
+
+	STRING	shift 185
+
+
+	.	error
+
+
+state 138:
+
+	operation_attribute : KW_post LPAREN . STRING RPAREN 
+
+	STRING	shift 186
+
+
+	.	error
+
+
+state 139:
+
+	operation_attribute : KW_pre LPAREN . STRING RPAREN 
+
+	STRING	shift 187
+
+
+	.	error
+
+
+state 140:
+
+	usage_attribute : KW_sml_type LPAREN . STRING RPAREN 
+
+	STRING	shift 188
+
+
+	.	error
+
+
+state 141:
+
+	declaration : simple_type_spec ID param_declarators SEMI .  (reduce by rule 12)
+
+
+
+	.	reduce by rule 12
+
+
+state 142:
+
+	param_declarators : LPAREN Plus_List_16 . RPAREN 
+
+	RPAREN	shift 189
+
+
+	.	error
+
+
+state 143:
+
+	Plus_List_16 : param_declarator . List_16 
+
+	COMMA	shift 191
+
+	List_16	goto 190
+
+	.	reduce by rule 193
+
+
+state 144:
+
+	param_declarators : LPAREN KW_void . RPAREN 
+
+	RPAREN	shift 192
+
+
+	.	error
+
+
+state 145:
+
+	param_declarator : LBRACK . Plus_List_17 RBRACK type_spec declarator 
+
+	KW_string	shift 95
+	KW_size_is	shift 202
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_in	shift 201
+	KW_out	shift 200
+	KW_sml_type	shift 91
+	KW_switch_is	shift 199
+
+	union_instance_switch_attr	goto 198
+	param_attribute	goto 197
+	usage_attribute	goto 196
+	field_attribute	goto 195
+	ptr_attribute	goto 194
+	Plus_List_17	goto 193
+
+	.	error
+
+
+state 146:
+
+	param_declarators : LPAREN RPAREN .  (reduce by rule 117)
+
+
+
+	.	reduce by rule 117
+
+
+state 147:
+
+	top_level : KW_cpp_quote LPAREN STRING RPAREN . SEMI 
+
+	SEMI	shift 203
+
+
+	.	error
+
+
+state 148:
+
+	top_level : KW_clib_version LPAREN STRING RPAREN . SEMI 
+
+	SEMI	shift 204
+
+
+	.	error
+
+
+state 149:
+
+	top_level : KW_clib_date LPAREN STRING RPAREN . SEMI 
+
+	SEMI	shift 205
+
+
+	.	error
+
+
+state 150:
+
+	top_level : KW_clib_name LPAREN STRING RPAREN . SEMI 
+
+	SEMI	shift 206
+
+
+	.	error
+
+
+state 151:
+
+	top_level : KW_sml_signature LPAREN STRING RPAREN . SEMI 
+
+	SEMI	shift 207
+
+
+	.	error
+
+
+state 152:
+
+	top_level : KW_sml_structure LPAREN STRING RPAREN . SEMI 
+
+	SEMI	shift 208
+
+
+	.	error
+
+
+state 153:
+
+	tagged_union : KW_union ID KW_switch LPAREN . switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union ID KW_switch LPAREN . switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+
+	ID	shift 214
+	KW_unsigned	shift 213
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 212
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	primitive_integer_type	goto 211
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 210
+	switch_type_spec	goto 209
+
+	.	error
+
+
+state 154:
+
+	union_body_ne : Plus_List_13 .  (reduce by rule 100)
+
+
+
+	.	reduce by rule 100
+
+
+state 155:
+
+	Plus_List_13 : union_case_ne . List_13 
+
+	LBRACK	shift 157
+
+	union_case_ne	goto 216
+	List_13	goto 215
+
+	.	reduce by rule 184
+
+
+state 156:
+
+	tagged_union : KW_union ID LBRACE union_body_ne . RBRACE 
+
+	RBRACE	shift 217
+
+
+	.	error
+
+
+state 157:
+
+	union_case_ne : LBRACK . KW_case LPAREN Plus_List_15 RPAREN RBRACK union_arm 
+	union_case_ne : LBRACK . KW_default RBRACK union_arm 
+
+	KW_case	shift 219
+	KW_default	shift 218
+
+
+	.	error
+
+
+state 158:
+
+	tagged_struct_declarator : KW_struct ID LBRACE Plus_List_9 . RBRACE 
+
+	RBRACE	shift 220
+
+
+	.	error
+
+
+state 159:
+
+	Plus_List_9 : member . SEMI List_9 
+
+	SEMI	shift 221
+
+
+	.	error
+
+
+state 160:
+
+	member : type_spec . Plus_List_11 
+
+	ASTERISK	shift 118
+
+	declarator	goto 223
+	List_6	goto 115
+	Plus_List_11	goto 222
+
+	.	reduce by rule 163
+
+
+state 161:
+
+	member : LBRACK . Plus_List_10 RBRACK type_spec Plus_List_11 
+
+	KW_string	shift 95
+	KW_size_is	shift 202
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_sml_type	shift 91
+	KW_switch_is	shift 199
+
+	union_instance_switch_attr	goto 198
+	usage_attribute	goto 196
+	field_attribute	goto 225
+	ptr_attribute	goto 194
+	Plus_List_10	goto 224
+
+	.	error
+
+
+state 162:
+
+	direct_declarator : function_declarator .  (reduce by rule 43)
+
+
+
+	.	reduce by rule 43
+
+
+state 163:
+
+	direct_declarator : array_declarator .  (reduce by rule 42)
+
+
+
+	.	reduce by rule 42
+
+
+state 164:
+
+	declarator : List_6 direct_declarator .  (reduce by rule 39)
+	array_declarator : direct_declarator . LBRACK RBRACK 
+	array_declarator : direct_declarator . LBRACK array_bound RBRACK 
+	array_declarator : direct_declarator . LBRACK array_bound DDOT array_bound RBRACK 
+	function_declarator : direct_declarator . param_declarators 
+
+	LPAREN	shift 97
+	LBRACK	shift 227
+
+	param_declarators	goto 226
+
+	.	reduce by rule 39
+
+
+state 165:
+
+	direct_declarator : LPAREN . ID RPAREN 
+
+	ID	shift 228
+
+
+	.	error
+
+
+state 166:
+
+	direct_declarator : ID .  (reduce by rule 40)
+
+
+
+	.	reduce by rule 40
+
+
+state 167:
+
+	declaration : KW_typedef type_spec Plus_List_4 SEMI .  (reduce by rule 8)
+
+
+
+	.	reduce by rule 8
+
+
+state 168:
+
+	Plus_List_4 : declarator List_4 .  (reduce by rule 156)
+
+
+
+	.	reduce by rule 156
+
+
+state 169:
+
+	List_4 : COMMA . declarator List_4 
+
+	ASTERISK	shift 118
+
+	declarator	goto 229
+	List_6	goto 115
+
+	.	reduce by rule 163
+
+
+state 170:
+
+	List_6 : ASTERISK List_6 .  (reduce by rule 162)
+
+
+
+	.	reduce by rule 162
+
+
+state 171:
+
+	union_type : KW_union KW_switch LPAREN . switch_type_spec ID RPAREN LBRACE union_body RBRACE 
+	union_type : KW_union KW_switch LPAREN . switch_type_spec ID RPAREN ID LBRACE union_body RBRACE 
+
+	ID	shift 214
+	KW_unsigned	shift 213
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 212
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	primitive_integer_type	goto 211
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 210
+	switch_type_spec	goto 230
+
+	.	error
+
+
+state 172:
+
+	union_type : KW_union LBRACE union_body_ne . RBRACE 
+
+	RBRACE	shift 231
+
+
+	.	error
+
+
+state 173:
+
+	constructed_type_spec : KW_struct LBRACE Plus_List_7 . RBRACE 
+
+	RBRACE	shift 232
+
+
+	.	error
+
+
+state 174:
+
+	Plus_List_7 : member . SEMI List_7 
+
+	SEMI	shift 233
+
+
+	.	error
+
+
+state 175:
+
+	constructed_type_spec : KW_enum LBRACE Plus_List_8 . RBRACE 
+
+	RBRACE	shift 234
+
+
+	.	error
+
+
+state 176:
+
+	Plus_List_8 : identifier . List_8 
+
+	COMMA	shift 236
+
+	List_8	goto 235
+
+	.	reduce by rule 169
+
+
+state 177:
+
+	identifier : ID . EQSIGN integer_const_exp 
+	identifier : ID .  (reduce by rule 110)
+
+	EQSIGN	shift 237
+
+
+	.	reduce by rule 110
+
+
+state 178:
+
+	declaration : KW_typedef LBRACK Plus_List_3 RBRACK . type_spec Plus_List_4 SEMI 
+
+	ID	shift 41
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 238
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+
+	.	error
+
+
+state 179:
+
+	Plus_List_3 : type_attribute List_3 .  (reduce by rule 153)
+
+
+
+	.	reduce by rule 153
+
+
+state 180:
+
+	List_3 : COMMA . type_attribute List_3 
+
+	KW_string	shift 95
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_sml_type	shift 91
+	KW_exclude	shift 130
+	KW_abstract	shift 129
+	KW_switch_type	shift 128
+
+	union_type_switch_attr	goto 127
+	type_attribute	goto 239
+	usage_attribute	goto 125
+	ptr_attribute	goto 124
+
+	.	error
+
+
+state 181:
+
+	union_type_switch_attr : KW_switch_type LPAREN . switch_type_spec RPAREN 
+
+	ID	shift 214
+	KW_unsigned	shift 213
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 212
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	primitive_integer_type	goto 211
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 210
+	switch_type_spec	goto 240
+
+	.	error
+
+
+state 182:
+
+	declaration : KW_const const_type_spec ID EQSIGN . const_exp SEMI 
+
+	ID	shift 249
+	STRING	shift 248
+	INT32	shift 247
+	WORD32	shift 246
+	KW_TRUE	shift 245
+	KW_FALSE	shift 244
+	KW_NULL	shift 243
+
+	const_exp	goto 242
+	integer_const_exp	goto 241
+
+	.	error
+
+
+state 183:
+
+	declaration : LBRACK Plus_List_5 RBRACK simple_type_spec . ID param_declarators SEMI 
+
+	ID	shift 250
+
+
+	.	error
+
+
+state 184:
+
+	List_5 : COMMA operation_attribute . List_5 
+
+	COMMA	shift 136
+
+	List_5	goto 251
+
+	.	reduce by rule 161
+
+
+state 185:
+
+	operation_attribute : KW_call LPAREN STRING . RPAREN 
+
+	RPAREN	shift 252
+
+
+	.	error
+
+
+state 186:
+
+	operation_attribute : KW_post LPAREN STRING . RPAREN 
+
+	RPAREN	shift 253
+
+
+	.	error
+
+
+state 187:
+
+	operation_attribute : KW_pre LPAREN STRING . RPAREN 
+
+	RPAREN	shift 254
+
+
+	.	error
+
+
+state 188:
+
+	usage_attribute : KW_sml_type LPAREN STRING . RPAREN 
+
+	RPAREN	shift 255
+
+
+	.	error
+
+
+state 189:
+
+	param_declarators : LPAREN Plus_List_16 RPAREN .  (reduce by rule 119)
+
+
+
+	.	reduce by rule 119
+
+
+state 190:
+
+	Plus_List_16 : param_declarator List_16 .  (reduce by rule 191)
+
+
+
+	.	reduce by rule 191
+
+
+state 191:
+
+	List_16 : COMMA . param_declarator List_16 
+
+	LBRACK	shift 145
+
+	param_declarator	goto 256
+
+	.	error
+
+
+state 192:
+
+	param_declarators : LPAREN KW_void RPAREN .  (reduce by rule 118)
+
+
+
+	.	reduce by rule 118
+
+
+state 193:
+
+	param_declarator : LBRACK Plus_List_17 . RBRACK type_spec declarator 
+
+	RBRACK	shift 257
+
+
+	.	error
+
+
+state 194:
+
+	field_attribute : ptr_attribute .  (reduce by rule 135)
+
+
+
+	.	reduce by rule 135
+
+
+state 195:
+
+	param_attribute : field_attribute .  (reduce by rule 124)
+
+
+
+	.	reduce by rule 124
+
+
+state 196:
+
+	field_attribute : usage_attribute .  (reduce by rule 133)
+
+
+
+	.	reduce by rule 133
+
+
+state 197:
+
+	Plus_List_17 : param_attribute . List_17 
+
+	COMMA	shift 259
+
+	List_17	goto 258
+
+	.	reduce by rule 196
+
+
+state 198:
+
+	field_attribute : union_instance_switch_attr .  (reduce by rule 134)
+
+
+
+	.	reduce by rule 134
+
+
+state 199:
+
+	union_instance_switch_attr : KW_switch_is . LPAREN attr_var RPAREN 
+
+	LPAREN	shift 260
+
+
+	.	error
+
+
+state 200:
+
+	param_attribute : KW_out .  (reduce by rule 123)
+
+
+
+	.	reduce by rule 123
+
+
+state 201:
+
+	param_attribute : KW_in .  (reduce by rule 122)
+
+
+
+	.	reduce by rule 122
+
+
+state 202:
+
+	field_attribute : KW_size_is . LPAREN Plus_List_23 RPAREN 
+
+	LPAREN	shift 261
+
+
+	.	error
+
+
+state 203:
+
+	top_level : KW_cpp_quote LPAREN STRING RPAREN SEMI .  (reduce by rule 7)
+
+
+
+	.	reduce by rule 7
+
+
+state 204:
+
+	top_level : KW_clib_version LPAREN STRING RPAREN SEMI .  (reduce by rule 5)
+
+
+
+	.	reduce by rule 5
+
+
+state 205:
+
+	top_level : KW_clib_date LPAREN STRING RPAREN SEMI .  (reduce by rule 6)
+
+
+
+	.	reduce by rule 6
+
+
+state 206:
+
+	top_level : KW_clib_name LPAREN STRING RPAREN SEMI .  (reduce by rule 4)
+
+
+
+	.	reduce by rule 4
+
+
+state 207:
+
+	top_level : KW_sml_signature LPAREN STRING RPAREN SEMI .  (reduce by rule 3)
+
+
+
+	.	reduce by rule 3
+
+
+state 208:
+
+	top_level : KW_sml_structure LPAREN STRING RPAREN SEMI .  (reduce by rule 2)
+
+
+
+	.	reduce by rule 2
+
+
+state 209:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec . ID RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec . ID RPAREN ID LBRACE union_body RBRACE 
+
+	ID	shift 262
+
+
+	.	error
+
+
+state 210:
+
+	switch_type_spec : char_type .  (reduce by rule 93)
+
+
+
+	.	reduce by rule 93
+
+
+state 211:
+
+	switch_type_spec : primitive_integer_type .  (reduce by rule 92)
+
+
+
+	.	reduce by rule 92
+
+
+state 212:
+
+	switch_type_spec : KW_boolean .  (reduce by rule 94)
+
+
+
+	.	reduce by rule 94
+
+
+state 213:
+
+	unsigned_integer : KW_unsigned . KW_long 
+	unsigned_integer : KW_unsigned . KW_long KW_int 
+	unsigned_integer : KW_unsigned . KW_short 
+	unsigned_integer : KW_unsigned . KW_short KW_int 
+	unsigned_integer : KW_unsigned . KW_small 
+	unsigned_integer : KW_unsigned . KW_small KW_int 
+	unsigned_integer : KW_unsigned . KW_int 
+	char_type : KW_unsigned . KW_char 
+
+	KW_int	shift 61
+	KW_long	shift 60
+	KW_short	shift 59
+	KW_small	shift 58
+	KW_char	shift 57
+
+
+	.	error
+
+
+state 214:
+
+	switch_type_spec : ID .  (reduce by rule 95)
+
+
+
+	.	reduce by rule 95
+
+
+state 215:
+
+	Plus_List_13 : union_case_ne List_13 .  (reduce by rule 182)
+
+
+
+	.	reduce by rule 182
+
+
+state 216:
+
+	List_13 : union_case_ne . List_13 
+
+	LBRACK	shift 157
+
+	union_case_ne	goto 216
+	List_13	goto 263
+
+	.	reduce by rule 184
+
+
+state 217:
+
+	tagged_union : KW_union ID LBRACE union_body_ne RBRACE .  (reduce by rule 98)
+
+
+
+	.	reduce by rule 98
+
+
+state 218:
+
+	union_case_ne : LBRACK KW_default . RBRACK union_arm 
+
+	RBRACK	shift 264
+
+
+	.	error
+
+
+state 219:
+
+	union_case_ne : LBRACK KW_case . LPAREN Plus_List_15 RPAREN RBRACK union_arm 
+
+	LPAREN	shift 265
+
+
+	.	error
+
+
+state 220:
+
+	tagged_struct_declarator : KW_struct ID LBRACE Plus_List_9 RBRACE .  (reduce by rule 84)
+
+
+
+	.	reduce by rule 84
+
+
+state 221:
+
+	Plus_List_9 : member SEMI . List_9 
+
+	ID	shift 41
+	LBRACK	shift 161
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 267
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	List_9	goto 266
+
+	.	reduce by rule 172
+
+
+state 222:
+
+	member : type_spec Plus_List_11 .  (reduce by rule 85)
+
+
+
+	.	reduce by rule 85
+
+
+state 223:
+
+	Plus_List_11 : declarator . List_11 
+
+	COMMA	shift 269
+
+	List_11	goto 268
+
+	.	reduce by rule 178
+
+
+state 224:
+
+	member : LBRACK Plus_List_10 . RBRACK type_spec Plus_List_11 
+
+	RBRACK	shift 270
+
+
+	.	error
+
+
+state 225:
+
+	Plus_List_10 : field_attribute . List_10 
+
+	COMMA	shift 272
+
+	List_10	goto 271
+
+	.	reduce by rule 175
+
+
+state 226:
+
+	function_declarator : direct_declarator param_declarators .  (reduce by rule 121)
+
+
+
+	.	reduce by rule 121
+
+
+state 227:
+
+	array_declarator : direct_declarator LBRACK . RBRACK 
+	array_declarator : direct_declarator LBRACK . array_bound RBRACK 
+	array_declarator : direct_declarator LBRACK . array_bound DDOT array_bound RBRACK 
+
+	ID	shift 277
+	INT32	shift 247
+	WORD32	shift 246
+	RBRACK	shift 276
+	ASTERISK	shift 275
+
+	integer_const_exp	goto 274
+	array_bound	goto 273
+
+	.	error
+
+
+state 228:
+
+	direct_declarator : LPAREN ID . RPAREN 
+
+	RPAREN	shift 278
+
+
+	.	error
+
+
+state 229:
+
+	List_4 : COMMA declarator . List_4 
+
+	COMMA	shift 169
+
+	List_4	goto 279
+
+	.	reduce by rule 158
+
+
+state 230:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec . ID RPAREN LBRACE union_body RBRACE 
+	union_type : KW_union KW_switch LPAREN switch_type_spec . ID RPAREN ID LBRACE union_body RBRACE 
+
+	ID	shift 280
+
+
+	.	error
+
+
+state 231:
+
+	union_type : KW_union LBRACE union_body_ne RBRACE .  (reduce by rule 91)
+
+
+
+	.	reduce by rule 91
+
+
+state 232:
+
+	constructed_type_spec : KW_struct LBRACE Plus_List_7 RBRACE .  (reduce by rule 79)
+
+
+
+	.	reduce by rule 79
+
+
+state 233:
+
+	Plus_List_7 : member SEMI . List_7 
+
+	ID	shift 41
+	LBRACK	shift 161
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 282
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	List_7	goto 281
+
+	.	reduce by rule 166
+
+
+state 234:
+
+	constructed_type_spec : KW_enum LBRACE Plus_List_8 RBRACE .  (reduce by rule 81)
+
+
+
+	.	reduce by rule 81
+
+
+state 235:
+
+	Plus_List_8 : identifier List_8 .  (reduce by rule 167)
+
+
+
+	.	reduce by rule 167
+
+
+state 236:
+
+	List_8 : COMMA . identifier List_8 
+
+	ID	shift 177
+
+	identifier	goto 283
+
+	.	error
+
+
+state 237:
+
+	identifier : ID EQSIGN . integer_const_exp 
+
+	INT32	shift 247
+	WORD32	shift 246
+
+	integer_const_exp	goto 284
+
+	.	error
+
+
+state 238:
+
+	declaration : KW_typedef LBRACK Plus_List_3 RBRACK type_spec . Plus_List_4 SEMI 
+
+	ASTERISK	shift 118
+
+	declarator	goto 117
+	Plus_List_4	goto 285
+	List_6	goto 115
+
+	.	reduce by rule 163
+
+
+state 239:
+
+	List_3 : COMMA type_attribute . List_3 
+
+	COMMA	shift 180
+
+	List_3	goto 286
+
+	.	reduce by rule 155
+
+
+state 240:
+
+	union_type_switch_attr : KW_switch_type LPAREN switch_type_spec . RPAREN 
+
+	RPAREN	shift 287
+
+
+	.	error
+
+
+state 241:
+
+	const_exp : integer_const_exp .  (reduce by rule 19)
+
+
+
+	.	reduce by rule 19
+
+
+state 242:
+
+	declaration : KW_const const_type_spec ID EQSIGN const_exp . SEMI 
+
+	SEMI	shift 288
+
+
+	.	error
+
+
+state 243:
+
+	const_exp : KW_NULL .  (reduce by rule 23)
+
+
+
+	.	reduce by rule 23
+
+
+state 244:
+
+	const_exp : KW_FALSE .  (reduce by rule 22)
+
+
+
+	.	reduce by rule 22
+
+
+state 245:
+
+	const_exp : KW_TRUE .  (reduce by rule 21)
+
+
+
+	.	reduce by rule 21
+
+
+state 246:
+
+	integer_const_exp : WORD32 .  (reduce by rule 26)
+
+
+
+	.	reduce by rule 26
+
+
+state 247:
+
+	integer_const_exp : INT32 .  (reduce by rule 25)
+
+
+
+	.	reduce by rule 25
+
+
+state 248:
+
+	const_exp : STRING .  (reduce by rule 20)
+
+
+
+	.	reduce by rule 20
+
+
+state 249:
+
+	const_exp : ID .  (reduce by rule 24)
+
+
+
+	.	reduce by rule 24
+
+
+state 250:
+
+	declaration : LBRACK Plus_List_5 RBRACK simple_type_spec ID . param_declarators SEMI 
+
+	LPAREN	shift 97
+
+	param_declarators	goto 289
+
+	.	error
+
+
+state 251:
+
+	List_5 : COMMA operation_attribute List_5 .  (reduce by rule 160)
+
+
+
+	.	reduce by rule 160
+
+
+state 252:
+
+	operation_attribute : KW_call LPAREN STRING RPAREN .  (reduce by rule 146)
+
+
+
+	.	reduce by rule 146
+
+
+state 253:
+
+	operation_attribute : KW_post LPAREN STRING RPAREN .  (reduce by rule 145)
+
+
+
+	.	reduce by rule 145
+
+
+state 254:
+
+	operation_attribute : KW_pre LPAREN STRING RPAREN .  (reduce by rule 144)
+
+
+
+	.	reduce by rule 144
+
+
+state 255:
+
+	usage_attribute : KW_sml_type LPAREN STRING RPAREN .  (reduce by rule 131)
+
+
+
+	.	reduce by rule 131
+
+
+state 256:
+
+	List_16 : COMMA param_declarator . List_16 
+
+	COMMA	shift 191
+
+	List_16	goto 290
+
+	.	reduce by rule 193
+
+
+state 257:
+
+	param_declarator : LBRACK Plus_List_17 RBRACK . type_spec declarator 
+
+	ID	shift 41
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 291
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+
+	.	error
+
+
+state 258:
+
+	Plus_List_17 : param_attribute List_17 .  (reduce by rule 194)
+
+
+
+	.	reduce by rule 194
+
+
+state 259:
+
+	List_17 : COMMA . param_attribute List_17 
+
+	KW_string	shift 95
+	KW_size_is	shift 202
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_in	shift 201
+	KW_out	shift 200
+	KW_sml_type	shift 91
+	KW_switch_is	shift 199
+
+	union_instance_switch_attr	goto 198
+	param_attribute	goto 292
+	usage_attribute	goto 196
+	field_attribute	goto 195
+	ptr_attribute	goto 194
+
+	.	error
+
+
+state 260:
+
+	union_instance_switch_attr : KW_switch_is LPAREN . attr_var RPAREN 
+
+	ID	shift 295
+	ASTERISK	shift 294
+
+	attr_var	goto 293
+
+	.	error
+
+
+state 261:
+
+	field_attribute : KW_size_is LPAREN . Plus_List_23 RPAREN 
+
+	ID	shift 295
+	ASTERISK	shift 294
+
+	attr_var	goto 297
+	Plus_List_23	goto 296
+
+	.	error
+
+
+state 262:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID . RPAREN LBRACE union_body RBRACE 
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID . RPAREN ID LBRACE union_body RBRACE 
+
+	RPAREN	shift 298
+
+
+	.	error
+
+
+state 263:
+
+	List_13 : union_case_ne List_13 .  (reduce by rule 183)
+
+
+
+	.	reduce by rule 183
+
+
+state 264:
+
+	union_case_ne : LBRACK KW_default RBRACK . union_arm 
+
+	ID	shift 41
+	LBRACK	shift 161
+	SEMI	shift 301
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 300
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	union_arm	goto 299
+
+	.	error
+
+
+state 265:
+
+	union_case_ne : LBRACK KW_case LPAREN . Plus_List_15 RPAREN RBRACK union_arm 
+
+	ID	shift 249
+	STRING	shift 248
+	INT32	shift 247
+	WORD32	shift 246
+	KW_TRUE	shift 245
+	KW_FALSE	shift 244
+	KW_NULL	shift 243
+
+	const_exp	goto 303
+	integer_const_exp	goto 241
+	Plus_List_15	goto 302
+
+	.	error
+
+
+state 266:
+
+	Plus_List_9 : member SEMI List_9 .  (reduce by rule 170)
+
+
+
+	.	reduce by rule 170
+
+
+state 267:
+
+	List_9 : member . SEMI List_9 
+
+	SEMI	shift 304
+
+
+	.	error
+
+
+state 268:
+
+	Plus_List_11 : declarator List_11 .  (reduce by rule 176)
+
+
+
+	.	reduce by rule 176
+
+
+state 269:
+
+	List_11 : COMMA . declarator List_11 
+
+	ASTERISK	shift 118
+
+	declarator	goto 305
+	List_6	goto 115
+
+	.	reduce by rule 163
+
+
+state 270:
+
+	member : LBRACK Plus_List_10 RBRACK . type_spec Plus_List_11 
+
+	ID	shift 41
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 306
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+
+	.	error
+
+
+state 271:
+
+	Plus_List_10 : field_attribute List_10 .  (reduce by rule 173)
+
+
+
+	.	reduce by rule 173
+
+
+state 272:
+
+	List_10 : COMMA . field_attribute List_10 
+
+	KW_string	shift 95
+	KW_size_is	shift 202
+	KW_ref	shift 94
+	KW_unique	shift 93
+	KW_ptr	shift 92
+	KW_sml_type	shift 91
+	KW_switch_is	shift 199
+
+	union_instance_switch_attr	goto 198
+	usage_attribute	goto 196
+	field_attribute	goto 307
+	ptr_attribute	goto 194
+
+	.	error
+
+
+state 273:
+
+	array_declarator : direct_declarator LBRACK array_bound . RBRACK 
+	array_declarator : direct_declarator LBRACK array_bound . DDOT array_bound RBRACK 
+
+	DDOT	shift 309
+	RBRACK	shift 308
+
+
+	.	error
+
+
+state 274:
+
+	array_bound : integer_const_exp .  (reduce by rule 115)
+
+
+
+	.	reduce by rule 115
+
+
+state 275:
+
+	array_bound : ASTERISK .  (reduce by rule 114)
+
+
+
+	.	reduce by rule 114
+
+
+state 276:
+
+	array_declarator : direct_declarator LBRACK RBRACK .  (reduce by rule 111)
+
+
+
+	.	reduce by rule 111
+
+
+state 277:
+
+	array_bound : ID .  (reduce by rule 116)
+
+
+
+	.	reduce by rule 116
+
+
+state 278:
+
+	direct_declarator : LPAREN ID RPAREN .  (reduce by rule 41)
+
+
+
+	.	reduce by rule 41
+
+
+state 279:
+
+	List_4 : COMMA declarator List_4 .  (reduce by rule 157)
+
+
+
+	.	reduce by rule 157
+
+
+state 280:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID . RPAREN LBRACE union_body RBRACE 
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID . RPAREN ID LBRACE union_body RBRACE 
+
+	RPAREN	shift 310
+
+
+	.	error
+
+
+state 281:
+
+	Plus_List_7 : member SEMI List_7 .  (reduce by rule 164)
+
+
+
+	.	reduce by rule 164
+
+
+state 282:
+
+	List_7 : member . SEMI List_7 
+
+	SEMI	shift 311
+
+
+	.	error
+
+
+state 283:
+
+	List_8 : COMMA identifier . List_8 
+
+	COMMA	shift 236
+
+	List_8	goto 312
+
+	.	reduce by rule 169
+
+
+state 284:
+
+	identifier : ID EQSIGN integer_const_exp .  (reduce by rule 109)
+
+
+
+	.	reduce by rule 109
+
+
+state 285:
+
+	declaration : KW_typedef LBRACK Plus_List_3 RBRACK type_spec Plus_List_4 . SEMI 
+
+	SEMI	shift 313
+
+
+	.	error
+
+
+state 286:
+
+	List_3 : COMMA type_attribute List_3 .  (reduce by rule 154)
+
+
+
+	.	reduce by rule 154
+
+
+state 287:
+
+	union_type_switch_attr : KW_switch_type LPAREN switch_type_spec RPAREN .  (reduce by rule 107)
+
+
+
+	.	reduce by rule 107
+
+
+state 288:
+
+	declaration : KW_const const_type_spec ID EQSIGN const_exp SEMI .  (reduce by rule 10)
+
+
+
+	.	reduce by rule 10
+
+
+state 289:
+
+	declaration : LBRACK Plus_List_5 RBRACK simple_type_spec ID param_declarators . SEMI 
+
+	SEMI	shift 314
+
+
+	.	error
+
+
+state 290:
+
+	List_16 : COMMA param_declarator List_16 .  (reduce by rule 192)
+
+
+
+	.	reduce by rule 192
+
+
+state 291:
+
+	param_declarator : LBRACK Plus_List_17 RBRACK type_spec . declarator 
+
+	ASTERISK	shift 118
+
+	declarator	goto 315
+	List_6	goto 115
+
+	.	reduce by rule 163
+
+
+state 292:
+
+	List_17 : COMMA param_attribute . List_17 
+
+	COMMA	shift 259
+
+	List_17	goto 316
+
+	.	reduce by rule 196
+
+
+state 293:
+
+	union_instance_switch_attr : KW_switch_is LPAREN attr_var . RPAREN 
+
+	RPAREN	shift 317
+
+
+	.	error
+
+
+state 294:
+
+	attr_var : ASTERISK . ID 
+
+	ID	shift 318
+
+
+	.	error
+
+
+state 295:
+
+	attr_var : ID .  (reduce by rule 137)
+
+
+
+	.	reduce by rule 137
+
+
+state 296:
+
+	field_attribute : KW_size_is LPAREN Plus_List_23 . RPAREN 
+
+	RPAREN	shift 319
+
+
+	.	error
+
+
+state 297:
+
+	Plus_List_23 : attr_var . List_23 
+
+	COMMA	shift 321
+
+	List_23	goto 320
+
+	.	reduce by rule 214
+
+
+state 298:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN . LBRACE union_body RBRACE 
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN . ID LBRACE union_body RBRACE 
+
+	ID	shift 323
+	LBRACE	shift 322
+
+
+	.	error
+
+
+state 299:
+
+	union_case_ne : LBRACK KW_default RBRACK union_arm .  (reduce by rule 104)
+
+
+
+	.	reduce by rule 104
+
+
+state 300:
+
+	union_arm : member . SEMI 
+
+	SEMI	shift 324
+
+
+	.	error
+
+
+state 301:
+
+	union_arm : SEMI .  (reduce by rule 105)
+
+
+
+	.	reduce by rule 105
+
+
+state 302:
+
+	union_case_ne : LBRACK KW_case LPAREN Plus_List_15 . RPAREN RBRACK union_arm 
+
+	RPAREN	shift 325
+
+
+	.	error
+
+
+state 303:
+
+	Plus_List_15 : const_exp . List_15 
+
+	COMMA	shift 327
+
+	List_15	goto 326
+
+	.	reduce by rule 190
+
+
+state 304:
+
+	List_9 : member SEMI . List_9 
+
+	ID	shift 41
+	LBRACK	shift 161
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 267
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	List_9	goto 328
+
+	.	reduce by rule 172
+
+
+state 305:
+
+	List_11 : COMMA declarator . List_11 
+
+	COMMA	shift 269
+
+	List_11	goto 329
+
+	.	reduce by rule 178
+
+
+state 306:
+
+	member : LBRACK Plus_List_10 RBRACK type_spec . Plus_List_11 
+
+	ASTERISK	shift 118
+
+	declarator	goto 223
+	List_6	goto 115
+	Plus_List_11	goto 330
+
+	.	reduce by rule 163
+
+
+state 307:
+
+	List_10 : COMMA field_attribute . List_10 
+
+	COMMA	shift 272
+
+	List_10	goto 331
+
+	.	reduce by rule 175
+
+
+state 308:
+
+	array_declarator : direct_declarator LBRACK array_bound RBRACK .  (reduce by rule 112)
+
+
+
+	.	reduce by rule 112
+
+
+state 309:
+
+	array_declarator : direct_declarator LBRACK array_bound DDOT . array_bound RBRACK 
+
+	ID	shift 277
+	INT32	shift 247
+	WORD32	shift 246
+	ASTERISK	shift 275
+
+	integer_const_exp	goto 274
+	array_bound	goto 332
+
+	.	error
+
+
+state 310:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN . LBRACE union_body RBRACE 
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN . ID LBRACE union_body RBRACE 
+
+	ID	shift 334
+	LBRACE	shift 333
+
+
+	.	error
+
+
+state 311:
+
+	List_7 : member SEMI . List_7 
+
+	ID	shift 41
+	LBRACK	shift 161
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 282
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	List_7	goto 335
+
+	.	reduce by rule 166
+
+
+state 312:
+
+	List_8 : COMMA identifier List_8 .  (reduce by rule 168)
+
+
+
+	.	reduce by rule 168
+
+
+state 313:
+
+	declaration : KW_typedef LBRACK Plus_List_3 RBRACK type_spec Plus_List_4 SEMI .  (reduce by rule 9)
+
+
+
+	.	reduce by rule 9
+
+
+state 314:
+
+	declaration : LBRACK Plus_List_5 RBRACK simple_type_spec ID param_declarators SEMI .  (reduce by rule 13)
+
+
+
+	.	reduce by rule 13
+
+
+state 315:
+
+	param_declarator : LBRACK Plus_List_17 RBRACK type_spec declarator .  (reduce by rule 120)
+
+
+
+	.	reduce by rule 120
+
+
+state 316:
+
+	List_17 : COMMA param_attribute List_17 .  (reduce by rule 195)
+
+
+
+	.	reduce by rule 195
+
+
+state 317:
+
+	union_instance_switch_attr : KW_switch_is LPAREN attr_var RPAREN .  (reduce by rule 108)
+
+
+
+	.	reduce by rule 108
+
+
+state 318:
+
+	attr_var : ASTERISK ID .  (reduce by rule 136)
+
+
+
+	.	reduce by rule 136
+
+
+state 319:
+
+	field_attribute : KW_size_is LPAREN Plus_List_23 RPAREN .  (reduce by rule 132)
+
+
+
+	.	reduce by rule 132
+
+
+state 320:
+
+	Plus_List_23 : attr_var List_23 .  (reduce by rule 212)
+
+
+
+	.	reduce by rule 212
+
+
+state 321:
+
+	List_23 : COMMA . attr_var List_23 
+
+	ID	shift 295
+	ASTERISK	shift 294
+
+	attr_var	goto 336
+
+	.	error
+
+
+state 322:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN LBRACE . union_body RBRACE 
+
+	KW_case	shift 342
+	KW_default	shift 341
+
+	union_body	goto 340
+	union_case	goto 339
+	Plus_List_12	goto 338
+	Plus_List_14	goto 337
+
+	.	error
+
+
+state 323:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN ID . LBRACE union_body RBRACE 
+
+	LBRACE	shift 343
+
+
+	.	error
+
+
+state 324:
+
+	union_arm : member SEMI .  (reduce by rule 106)
+
+
+
+	.	reduce by rule 106
+
+
+state 325:
+
+	union_case_ne : LBRACK KW_case LPAREN Plus_List_15 RPAREN . RBRACK union_arm 
+
+	RBRACK	shift 344
+
+
+	.	error
+
+
+state 326:
+
+	Plus_List_15 : const_exp List_15 .  (reduce by rule 188)
+
+
+
+	.	reduce by rule 188
+
+
+state 327:
+
+	List_15 : COMMA . const_exp List_15 
+
+	ID	shift 249
+	STRING	shift 248
+	INT32	shift 247
+	WORD32	shift 246
+	KW_TRUE	shift 245
+	KW_FALSE	shift 244
+	KW_NULL	shift 243
+
+	const_exp	goto 345
+	integer_const_exp	goto 241
+
+	.	error
+
+
+state 328:
+
+	List_9 : member SEMI List_9 .  (reduce by rule 171)
+
+
+
+	.	reduce by rule 171
+
+
+state 329:
+
+	List_11 : COMMA declarator List_11 .  (reduce by rule 177)
+
+
+
+	.	reduce by rule 177
+
+
+state 330:
+
+	member : LBRACK Plus_List_10 RBRACK type_spec Plus_List_11 .  (reduce by rule 86)
+
+
+
+	.	reduce by rule 86
+
+
+state 331:
+
+	List_10 : COMMA field_attribute List_10 .  (reduce by rule 174)
+
+
+
+	.	reduce by rule 174
+
+
+state 332:
+
+	array_declarator : direct_declarator LBRACK array_bound DDOT array_bound . RBRACK 
+
+	RBRACK	shift 346
+
+
+	.	error
+
+
+state 333:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN LBRACE . union_body RBRACE 
+
+	KW_case	shift 342
+	KW_default	shift 341
+
+	union_body	goto 347
+	union_case	goto 339
+	Plus_List_12	goto 338
+	Plus_List_14	goto 337
+
+	.	error
+
+
+state 334:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN ID . LBRACE union_body RBRACE 
+
+	LBRACE	shift 348
+
+
+	.	error
+
+
+state 335:
+
+	List_7 : member SEMI List_7 .  (reduce by rule 165)
+
+
+
+	.	reduce by rule 165
+
+
+state 336:
+
+	List_23 : COMMA attr_var . List_23 
+
+	COMMA	shift 321
+
+	List_23	goto 349
+
+	.	reduce by rule 214
+
+
+state 337:
+
+	union_case : Plus_List_14 . union_arm 
+
+	ID	shift 41
+	LBRACK	shift 161
+	SEMI	shift 301
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 300
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	union_arm	goto 350
+
+	.	error
+
+
+state 338:
+
+	union_body : Plus_List_12 .  (reduce by rule 99)
+
+
+
+	.	reduce by rule 99
+
+
+state 339:
+
+	Plus_List_12 : union_case . List_12 
+
+	KW_case	shift 342
+	KW_default	shift 341
+
+	union_case	goto 352
+	List_12	goto 351
+	Plus_List_14	goto 337
+
+	.	reduce by rule 181
+
+
+state 340:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body . RBRACE 
+
+	RBRACE	shift 353
+
+
+	.	error
+
+
+state 341:
+
+	union_case : KW_default . COLON union_arm 
+
+	COLON	shift 354
+
+
+	.	error
+
+
+state 342:
+
+	Plus_List_14 : KW_case . const_exp COLON List_14 
+
+	ID	shift 249
+	STRING	shift 248
+	INT32	shift 247
+	WORD32	shift 246
+	KW_TRUE	shift 245
+	KW_FALSE	shift 244
+	KW_NULL	shift 243
+
+	const_exp	goto 355
+	integer_const_exp	goto 241
+
+	.	error
+
+
+state 343:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE . union_body RBRACE 
+
+	KW_case	shift 342
+	KW_default	shift 341
+
+	union_body	goto 356
+	union_case	goto 339
+	Plus_List_12	goto 338
+	Plus_List_14	goto 337
+
+	.	error
+
+
+state 344:
+
+	union_case_ne : LBRACK KW_case LPAREN Plus_List_15 RPAREN RBRACK . union_arm 
+
+	ID	shift 41
+	LBRACK	shift 161
+	SEMI	shift 301
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 300
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	union_arm	goto 357
+
+	.	error
+
+
+state 345:
+
+	List_15 : COMMA const_exp . List_15 
+
+	COMMA	shift 327
+
+	List_15	goto 358
+
+	.	reduce by rule 190
+
+
+state 346:
+
+	array_declarator : direct_declarator LBRACK array_bound DDOT array_bound RBRACK .  (reduce by rule 113)
+
+
+
+	.	reduce by rule 113
+
+
+state 347:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body . RBRACE 
+
+	RBRACE	shift 359
+
+
+	.	error
+
+
+state 348:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE . union_body RBRACE 
+
+	KW_case	shift 342
+	KW_default	shift 341
+
+	union_body	goto 360
+	union_case	goto 339
+	Plus_List_12	goto 338
+	Plus_List_14	goto 337
+
+	.	error
+
+
+state 349:
+
+	List_23 : COMMA attr_var List_23 .  (reduce by rule 213)
+
+
+
+	.	reduce by rule 213
+
+
+state 350:
+
+	union_case : Plus_List_14 union_arm .  (reduce by rule 101)
+
+
+
+	.	reduce by rule 101
+
+
+state 351:
+
+	Plus_List_12 : union_case List_12 .  (reduce by rule 179)
+
+
+
+	.	reduce by rule 179
+
+
+state 352:
+
+	List_12 : union_case . List_12 
+
+	KW_case	shift 342
+	KW_default	shift 341
+
+	union_case	goto 352
+	List_12	goto 361
+	Plus_List_14	goto 337
+
+	.	reduce by rule 181
+
+
+state 353:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE .  (reduce by rule 96)
+
+
+
+	.	reduce by rule 96
+
+
+state 354:
+
+	union_case : KW_default COLON . union_arm 
+
+	ID	shift 41
+	LBRACK	shift 161
+	SEMI	shift 301
+	KW_enum	shift 74
+	KW_struct	shift 73
+	KW_union	shift 72
+	KW_float	shift 35
+	KW_double	shift 34
+	KW_hyper	shift 33
+	KW_unsigned	shift 32
+	KW_int	shift 31
+	KW_long	shift 30
+	KW_short	shift 29
+	KW_small	shift 28
+	KW_char	shift 27
+	KW_boolean	shift 26
+	KW_byte	shift 25
+	KW_void	shift 24
+	KW_string	shift 23
+	KW_sml_value	shift 17
+	KW_sml_int	shift 15
+	KW_sml_word	shift 14
+
+	type_spec	goto 160
+	simple_type_spec	goto 70
+	tagged_declarator	goto 69
+	integer_type	goto 9
+	primitive_integer_type	goto 8
+	signed_integer	goto 7
+	unsigned_integer	goto 6
+	char_type	goto 5
+	constructed_type_spec	goto 68
+	tagged_struct_declarator	goto 4
+	member	goto 300
+	tagged_union_declarator	goto 3
+	union_type	goto 67
+	tagged_union	goto 2
+	union_arm	goto 362
+
+	.	error
+
+
+state 355:
+
+	Plus_List_14 : KW_case const_exp . COLON List_14 
+
+	COLON	shift 363
+
+
+	.	error
+
+
+state 356:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body . RBRACE 
+
+	RBRACE	shift 364
+
+
+	.	error
+
+
+state 357:
+
+	union_case_ne : LBRACK KW_case LPAREN Plus_List_15 RPAREN RBRACK union_arm .  (reduce by rule 103)
+
+
+
+	.	reduce by rule 103
+
+
+state 358:
+
+	List_15 : COMMA const_exp List_15 .  (reduce by rule 189)
+
+
+
+	.	reduce by rule 189
+
+
+state 359:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE .  (reduce by rule 89)
+
+
+
+	.	reduce by rule 89
+
+
+state 360:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body . RBRACE 
+
+	RBRACE	shift 365
+
+
+	.	error
+
+
+state 361:
+
+	List_12 : union_case List_12 .  (reduce by rule 180)
+
+
+
+	.	reduce by rule 180
+
+
+state 362:
+
+	union_case : KW_default COLON union_arm .  (reduce by rule 102)
+
+
+
+	.	reduce by rule 102
+
+
+state 363:
+
+	Plus_List_14 : KW_case const_exp COLON . List_14 
+
+	KW_case	shift 367
+
+	List_14	goto 366
+
+	.	reduce by rule 187
+
+
+state 364:
+
+	tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE .  (reduce by rule 97)
+
+
+
+	.	reduce by rule 97
+
+
+state 365:
+
+	union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE .  (reduce by rule 90)
+
+
+
+	.	reduce by rule 90
+
+
+state 366:
+
+	Plus_List_14 : KW_case const_exp COLON List_14 .  (reduce by rule 185)
+
+
+
+	.	reduce by rule 185
+
+
+state 367:
+
+	List_14 : KW_case . const_exp COLON List_14 
+
+	ID	shift 249
+	STRING	shift 248
+	INT32	shift 247
+	WORD32	shift 246
+	KW_TRUE	shift 245
+	KW_FALSE	shift 244
+	KW_NULL	shift 243
+
+	const_exp	goto 368
+	integer_const_exp	goto 241
+
+	.	error
+
+
+state 368:
+
+	List_14 : KW_case const_exp . COLON List_14 
+
+	COLON	shift 369
+
+
+	.	error
+
+
+state 369:
+
+	List_14 : KW_case const_exp COLON . List_14 
+
+	KW_case	shift 367
+
+	List_14	goto 370
+
+	.	reduce by rule 187
+
+
+state 370:
+
+	List_14 : KW_case const_exp COLON List_14 .  (reduce by rule 186)
+
+
+
+	.	reduce by rule 186
+
+
+state 371:
+
+
+	EOF	accept
+
+
+	.	error
+
+418 of 1103 action table entries left after compaction
+395 goto table entries

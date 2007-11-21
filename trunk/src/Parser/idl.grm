@@ -1,0 +1,500 @@
+(* idl.grm
+ * 
+ * ML-Yacc description file for IDL.
+ * Originally generated from a Fred description of the grammar.
+ *)
+
+structure P = IdlParseTree
+
+%%
+
+%header (functor IdlLrValsFun (structure Token : TOKEN) : Idl_LRVALS)
+
+%name Idl
+
+%start start
+
+%eop EOF
+
+%pos int
+
+%term EOF
+ | ID of Atom.atom
+ | STRING of string
+ | INT32 of Int32.int
+ | WORD32 of Word32.word
+ | UUID of string
+ | DDOT
+ | DOT
+ | COMMA
+ | LPAREN
+ | RPAREN
+ | LBRACK
+ | RBRACK
+ | LBRACE
+ | RBRACE
+ | SEMI
+ | COLON
+ | ASTERISK of string
+ | QUOTE
+ | EQSIGN
+ | DASH
+(*  | KW_import *)
+ | KW_const
+ | KW_typedef
+ | KW_switch
+ | KW_case
+ | KW_default
+ | KW_enum
+ | KW_struct
+ | KW_union
+ | KW_float
+ | KW_double
+ | KW_hyper
+ | KW_unsigned
+ | KW_int
+ | KW_long
+ | KW_short
+ | KW_small
+ | KW_char
+ | KW_boolean
+ | KW_byte
+ | KW_void
+(* | KW_wchar_t *)
+ | KW_TRUE
+ | KW_FALSE
+ | KW_NULL
+ | KW_string
+ | KW_size_is
+ | KW_ref
+ | KW_unique
+ | KW_ptr
+ | KW_in
+ | KW_out
+ | KW_sml_structure
+ | KW_sml_signature
+ | KW_clib_name
+ | KW_clib_date
+ | KW_clib_version
+ | KW_sml_type
+ | KW_sml_value
+ | KW_sml_context
+ | KW_exclude
+ | KW_abstract
+ | KW_cpp_quote
+ | KW_pre
+ | KW_post
+ | KW_call
+ | KW_sml_int
+ | KW_sml_word
+ | KW_switch_type
+ | KW_switch_is
+
+%nonterm 
+   start of P.start
+ | top_level of P.top_level
+ | declaration of P.declaration
+ | const_type_spec of P.const_type_spec
+ | const_exp of P.const_exp
+ | integer_const_exp of P.integer_const_exp
+ | type_spec of P.type_spec
+ | simple_type_spec of P.simple_type_spec
+ | declarator of P.declarator
+ | direct_declarator of P.direct_declarator
+ | tagged_declarator of P.tagged_declarator
+ | integer_type of P.integer_type
+ | primitive_integer_type of P.primitive_integer_type
+ | signed_integer of P.signed_integer
+ | unsigned_integer of P.unsigned_integer
+ | char_type of P.char_type
+ | constructed_type_spec of P.constructed_type_spec
+ | tagged_struct_declarator of P.tagged_struct_declarator
+ | member of P.member
+ | tagged_union_declarator of P.tagged_union_declarator
+ | union_type of P.union_type
+ | switch_type_spec of P.switch_type_spec
+ | tagged_union of P.tagged_union
+ | union_body of P.union_body
+ | union_body_ne of P.union_body_ne
+ | union_case of P.union_case
+ | union_case_ne of P.union_case_ne
+ | union_arm of P.union_arm
+ | union_type_switch_attr of P.union_type_switch_attr
+ | union_instance_switch_attr of P.union_instance_switch_attr
+ | identifier of P.identifier
+ | array_declarator of P.array_declarator
+ | array_bound of P.array_bound
+ | param_declarators of P.param_declarators
+ | param_declarator of P.param_declarator
+ | function_declarator of P.function_declarator
+ | param_attribute of P.param_attribute
+ | type_attribute of P.type_attribute
+ | usage_attribute of P.usage_attribute
+ | field_attribute of P.field_attribute
+ | attr_var of P.attr_var
+ | ptr_attribute of P.ptr_attribute
+ | operation_attribute of P.operation_attribute
+ | List_1 of (P.top_level) list
+ | List_2 of (string) list
+ | Plus_List_2 of (string) list
+ | List_3 of (P.type_attribute) list
+ | Plus_List_3 of (P.type_attribute) list
+ | List_4 of (P.declarator) list
+ | Plus_List_4 of (P.declarator) list
+ | List_5 of (P.operation_attribute) list
+ | Plus_List_5 of (P.operation_attribute) list
+ | List_6 of (string) list
+ | List_7 of (P.member) list
+ | Plus_List_7 of (P.member) list
+ | List_8 of (P.identifier) list
+ | Plus_List_8 of (P.identifier) list
+ | List_9 of (P.member) list
+ | Plus_List_9 of (P.member) list
+ | List_10 of (P.field_attribute) list
+ | Plus_List_10 of (P.field_attribute) list
+ | List_11 of (P.declarator) list
+ | Plus_List_11 of (P.declarator) list
+ | List_12 of (P.union_case) list
+ | Plus_List_12 of (P.union_case) list
+ | List_13 of (P.union_case_ne) list
+ | Plus_List_13 of (P.union_case_ne) list
+ | List_14 of (P.const_exp) list
+ | Plus_List_14 of (P.const_exp) list
+ | List_15 of (P.const_exp) list
+ | Plus_List_15 of (P.const_exp) list
+ | List_16 of (P.param_declarator) list
+ | Plus_List_16 of (P.param_declarator) list
+ | List_17 of (P.param_attribute) list
+ | Plus_List_17 of (P.param_attribute) list
+ | List_18 of (P.attr_var) list
+ | Plus_List_18 of (P.attr_var) list
+ | List_19 of (P.attr_var) list
+ | Plus_List_19 of (P.attr_var) list
+ | List_20 of (P.attr_var) list
+ | Plus_List_20 of (P.attr_var) list
+ | List_21 of (P.attr_var) list
+ | Plus_List_21 of (P.attr_var) list
+ | List_22 of (P.attr_var) list
+ | Plus_List_22 of (P.attr_var) list
+ | List_23 of (P.attr_var) list
+ | Plus_List_23 of (P.attr_var) list
+
+%pure
+%noshift
+%verbose
+
+%%
+
+
+start : List_1 (P.PT (List_1))
+
+top_level : (* KW_import Plus_List_2 SEMI (P.Import (Plus_List_2))
+ | *)
+   declaration (P.TopDecl (declaration))
+ | KW_sml_structure LPAREN STRING RPAREN SEMI (P.StructName (STRING))
+ | KW_sml_signature LPAREN STRING RPAREN SEMI (P.SigName (STRING))
+ | KW_clib_name LPAREN STRING RPAREN SEMI (P.CLibName (STRING))
+ | KW_clib_version LPAREN STRING RPAREN SEMI (P.CLibVersion (STRING))
+ | KW_clib_date LPAREN STRING RPAREN SEMI (P.CLibDate (STRING))
+ | KW_cpp_quote LPAREN STRING RPAREN SEMI (P.CppQuote (STRING))
+
+declaration : KW_typedef type_spec Plus_List_4 SEMI (P.Type (NONE,type_spec,Plus_List_4))
+ | KW_typedef LBRACK Plus_List_3 RBRACK type_spec Plus_List_4 SEMI (P.Type (SOME (Plus_List_3),type_spec,Plus_List_4))
+ | KW_const const_type_spec ID EQSIGN const_exp SEMI (P.Const (const_type_spec,ID,const_exp))
+ | tagged_declarator SEMI (P.Tagged (tagged_declarator))
+ | simple_type_spec ID param_declarators SEMI (P.Operation (NONE,simple_type_spec,ID,param_declarators))
+ | LBRACK Plus_List_5 RBRACK simple_type_spec ID param_declarators SEMI (P.Operation (SOME (Plus_List_5),simple_type_spec,ID,param_declarators))
+
+const_type_spec : primitive_integer_type (P.CT_Integer (primitive_integer_type))
+ | KW_char (P.CT_Char)
+ | KW_boolean (P.CT_Bool)
+ | KW_void ASTERISK (P.CT_VoidPtr (ASTERISK))
+ | KW_char ASTERISK (P.CT_CharPtr (ASTERISK))
+
+const_exp : integer_const_exp (P.CE_Integer (integer_const_exp))
+ | STRING (P.CE_String (STRING))
+ | KW_TRUE (P.CE_True)
+ | KW_FALSE (P.CE_False)
+ | KW_NULL (P.CE_Null)
+ | ID (P.CE_Id (ID))
+
+integer_const_exp : INT32 (P.CE_Int (INT32))
+ | WORD32 (P.CE_Word (WORD32))
+
+type_spec : simple_type_spec (P.TS_Simple (simple_type_spec))
+ | constructed_type_spec (P.TS_Constructed (constructed_type_spec))
+
+simple_type_spec : KW_float (P.Float)
+ | KW_double (P.Double)
+ | integer_type (P.Integer (integer_type))
+ | char_type (P.Character (char_type))
+ | KW_boolean (P.Bool)
+ | KW_byte (P.Byte)
+ | KW_void (P.Void)
+ | KW_string (P.String)   (* ajt added... does this work? *)
+ | ID (P.TS_Id (ID))
+ | KW_sml_value (P.SmlValue)
+
+declarator : List_6 direct_declarator (P.Decl (List_6,direct_declarator))
+
+direct_declarator : ID (P.D_Id (ID))
+ | LPAREN ID RPAREN (P.D_PId (ID))
+ | array_declarator (P.D_Array (array_declarator))
+ | function_declarator (P.D_Function (function_declarator))
+
+tagged_declarator : tagged_struct_declarator (P.TG_Struct (tagged_struct_declarator))
+ | tagged_union_declarator (P.TG_Union (tagged_union_declarator))
+
+integer_type : primitive_integer_type (P.PrimitiveInteger (primitive_integer_type))
+ | KW_hyper (P.HInt)
+ | KW_hyper KW_int (P.HInt)
+ | KW_hyper KW_unsigned (P.HUInt)
+ | KW_hyper KW_unsigned KW_int (P.HUInt)
+ | KW_unsigned KW_hyper (P.UHInt)
+ | KW_unsigned KW_hyper KW_int (P.UHInt)
+
+primitive_integer_type : signed_integer (P.Signed (signed_integer))
+ | unsigned_integer (P.Unsigned (unsigned_integer))
+ | KW_sml_int (P.SmlInt)
+ | KW_sml_word (P.SmlWord)
+
+signed_integer : KW_long (P.Long)
+ | KW_long KW_int (P.Long)
+ | KW_short (P.Short)
+ | KW_short KW_int (P.Short)
+ | KW_small (P.Small)
+ | KW_small KW_int (P.Small)
+ | KW_int (P.Int)
+
+unsigned_integer : KW_unsigned KW_long (P.ULong)
+ | KW_unsigned KW_long KW_int (P.ULong)
+ | KW_unsigned KW_short (P.UShort)
+ | KW_unsigned KW_short KW_int (P.UShort)
+ | KW_unsigned KW_small (P.USmall)
+ | KW_unsigned KW_small KW_int (P.USmall)
+ | KW_unsigned KW_int (P.UInt)
+ | KW_long KW_unsigned (P.LongU)
+ | KW_long KW_unsigned KW_int (P.LongU)
+ | KW_short KW_unsigned (P.ShortU)
+ | KW_short KW_unsigned KW_int (P.ShortU)
+ | KW_small KW_unsigned (P.SmallU)
+ | KW_small KW_unsigned KW_int (P.SmallU)
+
+char_type : KW_unsigned KW_char (P.UChar)
+ | KW_char (P.Char)
+(* | KW_unsigned KW_wchar_t (P.UWChar) *)
+(* | KW_wchar_t (P.WChar) *)
+
+constructed_type_spec : KW_struct LBRACE Plus_List_7 RBRACE (P.Struct (Plus_List_7))
+ | union_type (P.Union (union_type))
+ | KW_enum LBRACE Plus_List_8 RBRACE (P.Enum (Plus_List_8))
+ | tagged_declarator (P.TaggedD (tagged_declarator))
+
+tagged_struct_declarator : KW_struct ID (P.S_Tag (ID))
+ | KW_struct ID LBRACE Plus_List_9 RBRACE (P.S_TagBody (ID,Plus_List_9))
+
+member : type_spec Plus_List_11 (P.Field (NONE,type_spec,Plus_List_11))
+ | LBRACK Plus_List_10 RBRACK type_spec Plus_List_11 (P.Field (SOME (Plus_List_10),type_spec,Plus_List_11))
+
+tagged_union_declarator : KW_union ID (P.U_Tag (ID))
+ | tagged_union (P.U_TagBody (tagged_union))
+
+union_type : KW_union KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE (P.EUnion (switch_type_spec,ID,NONE,union_body))
+ | KW_union KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE (P.EUnion (switch_type_spec,ID1,SOME (ID2),union_body))
+ | KW_union LBRACE union_body_ne RBRACE (P.NEUnion (union_body_ne))
+
+switch_type_spec : primitive_integer_type (P.SW_Integer (primitive_integer_type))
+ | char_type (P.SW_Char (char_type))
+ | KW_boolean (P.SW_Bool)
+ | ID (P.SW_Id (ID))
+
+tagged_union : KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN LBRACE union_body RBRACE (P.TaggedEUnion (ID1,switch_type_spec,ID2,NONE,union_body))
+ | KW_union ID KW_switch LPAREN switch_type_spec ID RPAREN ID LBRACE union_body RBRACE (P.TaggedEUnion (ID1,switch_type_spec,ID2,SOME (ID3),union_body))
+ | KW_union ID LBRACE union_body_ne RBRACE (P.TaggedNEUnion (ID,union_body_ne))
+
+union_body : Plus_List_12 (P.Body (Plus_List_12))
+
+union_body_ne : Plus_List_13 (P.BodyNE (Plus_List_13))
+
+union_case : Plus_List_14 union_arm (P.UnionCase (Plus_List_14,union_arm))
+ | KW_default COLON union_arm (P.DefaultCase (union_arm))
+
+union_case_ne : LBRACK KW_case LPAREN Plus_List_15 RPAREN RBRACK union_arm (P.UnionCaseNE (Plus_List_15,union_arm))
+ | LBRACK KW_default RBRACK union_arm (P.DefaultCaseNE (union_arm))
+
+union_arm : SEMI (P.UnionArm (NONE))
+ | member SEMI (P.UnionArm (SOME (member)))
+
+union_type_switch_attr : KW_switch_type LPAREN switch_type_spec RPAREN (P.A_SwitchType (switch_type_spec))
+
+union_instance_switch_attr : KW_switch_is LPAREN attr_var RPAREN (P.A_SwitchIs (attr_var))
+
+identifier : ID EQSIGN integer_const_exp (P.IdValue (ID,integer_const_exp))
+ | ID (P.Id (ID))
+
+array_declarator : direct_declarator LBRACK RBRACK (P.ArrayOne (direct_declarator,NONE))
+ | direct_declarator LBRACK array_bound RBRACK (P.ArrayOne (direct_declarator,SOME (array_bound)))
+ | direct_declarator LBRACK array_bound DDOT array_bound RBRACK (P.ArrayTwo (direct_declarator,array_bound1,array_bound2))
+
+array_bound : ASTERISK (P.BoundAst (ASTERISK))
+ | integer_const_exp (P.BoundInt (integer_const_exp))
+ | ID (P.BoundId (ID))
+
+param_declarators : LPAREN RPAREN (P.Empty)
+ | LPAREN KW_void RPAREN (P.EmptyVoid)
+ | LPAREN Plus_List_16 RPAREN (P.Params (Plus_List_16))
+
+param_declarator : LBRACK Plus_List_17 RBRACK type_spec declarator (P.Param (Plus_List_17,type_spec,declarator))
+
+function_declarator : direct_declarator param_declarators (P.Function (direct_declarator,param_declarators))
+
+param_attribute : 
+   KW_in (P.A_In)
+ | KW_out (P.A_Out)
+ | field_attribute (P.A_ParamField (field_attribute))
+
+type_attribute : 
+   usage_attribute (P.A_TypeUsage (usage_attribute))
+ | union_type_switch_attr (P.A_TypeUnion (union_type_switch_attr))
+ | ptr_attribute (P.A_TypePtr (ptr_attribute))
+ | KW_exclude (P.A_Exclude)
+ | KW_abstract (P.A_Abstract)
+
+usage_attribute : 
+   KW_string (P.A_String)
+ | KW_sml_type LPAREN STRING RPAREN (P.A_SmlType (STRING))
+
+field_attribute : 
+   KW_size_is LPAREN Plus_List_23 RPAREN (P.A_SizeIs (Plus_List_23))
+ | usage_attribute (P.A_FieldUsage (usage_attribute))
+ | union_instance_switch_attr (P.A_FieldUnion (union_instance_switch_attr))
+ | ptr_attribute (P.A_FieldPtr (ptr_attribute))
+
+attr_var : 
+   ASTERISK ID (P.VarPtr (ASTERISK,ID))
+ | ID (P.Var (ID))
+
+ptr_attribute : 
+   KW_ref (P.A_Ref)
+ | KW_unique (P.A_Unique)
+ | KW_ptr (P.A_Ptr)
+
+operation_attribute : 
+   usage_attribute (P.A_OperationUsage (usage_attribute))
+ | ptr_attribute (P.A_OperationPtr (ptr_attribute))
+ | KW_sml_context (P.A_SmlContext)
+ | KW_pre LPAREN STRING RPAREN (P.A_Pre (STRING))
+ | KW_post LPAREN STRING RPAREN (P.A_Post (STRING))
+ | KW_call LPAREN STRING RPAREN (P.A_Call (STRING))
+ | KW_exclude (P.A_ExcludeOper)
+
+List_1 : top_level List_1 ((top_level)::List_1)
+ |  ([])
+
+Plus_List_2 : STRING List_2 ((STRING)::List_2)
+
+List_2 : COMMA STRING List_2 ((STRING)::List_2)
+ |  ([])
+
+Plus_List_3 : type_attribute List_3 ((type_attribute)::List_3)
+
+List_3 : COMMA type_attribute List_3 ((type_attribute)::List_3)
+ |  ([])
+
+Plus_List_4 : declarator List_4 ((declarator)::List_4)
+
+List_4 : COMMA declarator List_4 ((declarator)::List_4)
+ |  ([])
+
+Plus_List_5 : operation_attribute List_5 ((operation_attribute)::List_5)
+
+List_5 : COMMA operation_attribute List_5 ((operation_attribute)::List_5)
+ |  ([])
+
+List_6 : ASTERISK List_6 ((ASTERISK)::List_6)
+ |  ([])
+
+Plus_List_7 : member SEMI List_7 ((member)::List_7)
+
+List_7 : member SEMI List_7 ((member)::List_7)
+ |  ([])
+
+Plus_List_8 : identifier List_8 ((identifier)::List_8)
+
+List_8 : COMMA identifier List_8 ((identifier)::List_8)
+ |  ([])
+
+Plus_List_9 : member SEMI List_9 ((member)::List_9)
+
+List_9 : member SEMI List_9 ((member)::List_9)
+ |  ([])
+
+Plus_List_10 : field_attribute List_10 ((field_attribute)::List_10)
+
+List_10 : COMMA field_attribute List_10 ((field_attribute)::List_10)
+ |  ([])
+
+Plus_List_11 : declarator List_11 ((declarator)::List_11)
+
+List_11 : COMMA declarator List_11 ((declarator)::List_11)
+ |  ([])
+
+Plus_List_12 : union_case List_12 ((union_case)::List_12)
+
+List_12 : union_case List_12 ((union_case)::List_12)
+ |  ([])
+
+Plus_List_13 : union_case_ne List_13 ((union_case_ne)::List_13)
+
+List_13 : union_case_ne List_13 ((union_case_ne)::List_13)
+ |  ([])
+
+Plus_List_14 : KW_case const_exp COLON List_14 ((const_exp)::List_14)
+
+List_14 : KW_case const_exp COLON List_14 ((const_exp)::List_14)
+ |  ([])
+
+Plus_List_15 : const_exp List_15 ((const_exp)::List_15)
+
+List_15 : COMMA const_exp List_15 ((const_exp)::List_15)
+ |  ([])
+
+Plus_List_16 : param_declarator List_16 ((param_declarator)::List_16)
+
+List_16 : COMMA param_declarator List_16 ((param_declarator)::List_16)
+ |  ([])
+
+Plus_List_17 : param_attribute List_17 ((param_attribute)::List_17)
+
+List_17 : COMMA param_attribute List_17 ((param_attribute)::List_17)
+ |  ([])
+
+Plus_List_18 : attr_var List_18 ((attr_var)::List_18)
+
+List_18 : COMMA attr_var List_18 ((attr_var)::List_18)
+ |  ([])
+
+Plus_List_19 : attr_var List_19 ((attr_var)::List_19)
+
+List_19 : COMMA attr_var List_19 ((attr_var)::List_19)
+ |  ([])
+
+Plus_List_20 : attr_var List_20 ((attr_var)::List_20)
+
+List_20 : COMMA attr_var List_20 ((attr_var)::List_20)
+ |  ([])
+
+Plus_List_21 : attr_var List_21 ((attr_var)::List_21)
+
+List_21 : COMMA attr_var List_21 ((attr_var)::List_21)
+ |  ([])
+
+Plus_List_22 : attr_var List_22 ((attr_var)::List_22)
+
+List_22 : COMMA attr_var List_22 ((attr_var)::List_22)
+ |  ([])
+
+Plus_List_23 : attr_var List_23 ((attr_var)::List_23)
+
+List_23 : COMMA attr_var List_23 ((attr_var)::List_23)
+ |  ([])

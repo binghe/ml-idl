@@ -1,0 +1,39 @@
+(* sources.cm *)
+
+Group
+  structure Main
+
+  structure GenerateHeader
+  structure GenerateSMLNJ
+  structure GenerateClassicRuntime
+  structure GenerateRuntime
+
+#if defined(SUPPORT_MOBY)
+  structure GenerateMBX
+#endif
+is
+
+ $/smlnj-lib.cm
+ $/basis.cm
+ $/pp-lib.cm
+ $/ml-yacc-lib.cm
+
+ TargetHeader/generate-header.sml
+
+ TargetSMLNJ/generate-smlnj.sml
+ TargetSMLNJ/generate-sml-fn.sml
+ TargetSMLNJ/concrete-runtime.sml
+
+ TargetSMLNJ-RT-Classic/generate-runtime.sml
+ TargetSMLNJ-RT-Classic/generate-runtime-glue.sml
+
+ TargetSMLNJ-RT/generate-runtime.sml
+ TargetSMLNJ-RT/generate-runtime-glue.sml
+
+#if defined(SUPPORT_MOBY)
+ (* moby-idl *)
+ TargetMoby/sources.cm
+ TargetMoby/generate-mbx.sml
+#endif
+
+ Main/sources.cm
