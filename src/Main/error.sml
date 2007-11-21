@@ -4,6 +4,8 @@
 
 structure Error : sig
 
+  exception Quit
+
   val quit : unit -> 'a
   val error : string list -> 'a
   val bug : string list -> unit
