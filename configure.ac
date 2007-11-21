@@ -72,8 +72,8 @@ dnl
     *) AC_MSG_ERROR([--with-smlnj-lib argument must be absolute]) ;;
   esac
 fi
-SMLNJ_LIB_CM="smlnj-lib.cm"
-PP_LIB_CM="pp-lib.cm"
+SMLNJ_LIB_CM="\$/smlnj-lib.cm"
+PP_LIB_CM="\$/pp-lib.cm"
 if test x$SMLNJ_LIB_DIR != x ; then
   SMLNJ_LIB_CM=$SMLNJ_LIB_DIR/Util/$SMLNJ_LIB_CM
   PP_LIB_CM=$SMLNJ_LIB_DIR/PP/$PP_LIB_CM
@@ -124,6 +124,29 @@ dnl
 CHECK_SMLNJ_HEAP_SUFFIX([
   AC_MSG_ERROR([unsupported configuration ${host_cpu}-${host_os}])])
 
+dnl
+dnl look for ml-makedepend
+dnl
+AC_MSG_CHECKING([for ml-makedepend])
+tmpPATH="$SMLNJ_PATH:$PATH"
+AC_PATH_PROG(ML_MAKEDEPEND, ml-makedepend, ":", $tmpPATH)
+if test $ML_MAKEDEPEND = none ; then
+  AC_MSG_ERROR([ml-makedepend not found])
+else
+  AC_MSG_RESULT([$ML_MAKEDEPEND])
+fi
+AC_SUBST(ML_MAKEDEPEND)
+
+dnl
+dnl look for ml-build
+dnl
+tmpPATH="$SMLNJ_PATH:$PATH"
+AC_PATH_PROG(ML_BUILD, ml-build, none, $tmpPATH)
+if test $ML_BUILD = none ; then
+  AC_MSG_ERROR([ml-build not found])
+fi
+AC_SUBST(ML_BUILD)
+AC_SUBST(ML_BUILD_FLAGS)
 
 dnl
 dnl define various directory paths

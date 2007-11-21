@@ -4,7 +4,7 @@
  *
  * Import some stuff from the Moby source tree.
  *
- * Generated automatically from sources_cm.in by configure.
+ * src/TargetMoby/sources.cm.  Generated from sources_cm.in by configure.
  *)
 
 Group
