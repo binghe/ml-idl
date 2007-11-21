@@ -1,0 +1,5 @@
+
+group is
+ smlnj-lib.cm
+ ../ncurses/ncurses.cm
+ life.sml

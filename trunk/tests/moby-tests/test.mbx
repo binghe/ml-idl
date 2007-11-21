@@ -1,0 +1,51 @@
+%library ("AB4D5DAC-1D55-4030-9D91-1C9B310234C8"){
+  %import "moby-basis" ("A5CEBED0-5446-11D3-B355-000502A6C462")
+  {
+    %type Int 
+    %type Long 
+    %type Integer 
+    %type Float 
+    %type Double 
+    %type Extended 
+    %type Char 
+    %type Option 
+    %type string
+  }
+  
+  %typedef exn = %ptr(%data)
+  %typedef exn_handler = %contptr(exn)
+  %datatype Timeval  {TIMEVAL %of (Int, Int)}
+  
+  %typedef timeval = %addr(%struct 8:4 (0 !%int : 4 [1],
+                                        4 !%int : 4 [1]))
+  %datatype Timezone  {TIMEZONE %of (Int, Int)}
+  
+  %typedef timezone = %addr(%struct 8:4 (0 !%int : 4 [1],
+                                         4 !%int : 4 [1]))
+  %extern %void gettimeofday (%addr(timeval), %addr(timezone))
+  %val gettimeofday : () -> (Timeval, Timezone) =
+    %fun gettimeofday_4(_ : exn_handler){
+    %stackalloc marsh_t : %addr(timeval) = <8 : 4>
+      %stackalloc marsh_tz : %addr(timezone) = <8 : 4>
+        %do %ccall gettimeofday(marsh_t, marsh_tz)
+          %let marsh_t_2 = AdrLoadI32(marsh_t)
+            %let marsh_t_3 = AdrLoadI32(AdrAdd(marsh_t, 4))
+              %let t = %alloc (marsh_t_2, marsh_t_3)
+                %let marsh_tz_0 = AdrLoadI32(marsh_tz)
+                  %let marsh_tz_1 = AdrLoadI32(AdrAdd(marsh_tz, 4))
+                    %let tz = %alloc (marsh_tz_0, marsh_tz_1) %return (t, tz) }
+  
+  %extern %int dumb (%addr(timeval), %int)
+  %val dumb : (Timeval, Int) -> Int =
+    %fun dumb_8(t : %any, v : %int, _ : exn_handler){
+    %stackalloc marsh_t : %addr(timeval) = <8 : 4>
+      %let marsh_t_7 = t#0
+        %do AdrStoreI32(marsh_t, marsh_t_7)
+          %let marsh_t_6 = t#1
+            %do AdrStoreI32(AdrAdd(marsh_t, 4), marsh_t_6)
+              %let marsh_v = v
+                %let marsh_dumb_result_5 = %ccall dumb(marsh_t, marsh_v)
+                  %let dumb_result_5 = marsh_dumb_result_5
+                    %return dumb_result_5 }
+  
+}

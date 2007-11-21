@@ -1,0 +1,15 @@
+
+typedef struct {
+  long tv_sec;
+  long tv_usec;
+} timeval;
+
+typedef struct {
+  int   tz_minuteswest;
+  int   tz_dsttime;
+} timezone;
+
+void gettimeofday ([out,ref] timeval *t, [ref,out] timezone *tz);
+
+int dumb ([in,ref] timeval *t,[in] int v);
+
