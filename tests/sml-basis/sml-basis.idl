@@ -1,0 +1,178 @@
+/* sml-basis.idl
+ *
+ * COPYRIGHT (c) 2000 Bell Labs, Lucent Technologies.
+ *
+ * This file is a ML-IDL specification of the run-time library
+ * that supports the generic system interfaces of the SML'97 Basis.
+ */
+
+sml_structure ("SMLBasis");
+sml_signature ("SML_BASIS");
+clib_name ("SMLBasis");
+cpp_quote ("#include \"SML/base.h\"");
+
+/******************** Useful IDL types ********************/
+
+typedef [string] char* idl_string;
+
+/******************** Common SML types ********************/
+
+typedef [sml_type ("Word8Vector.vector")] sml_value ML_word8vec_t;
+typedef [sml_type ("Word8Array.array")] sml_value ML_word8arr_t;
+typedef [sml_type ("CharVector.vector")] sml_value ML_charvec_t;
+typedef [sml_type ("CharArray.array")] sml_value ML_chararr_t;
+typedef [sml_type ("unit")] sml_value ML_unit_t;
+typedef [sml_type ("string")] sml_value ML_string_t;
+typedef [sml_type ("string option")] sml_value ML_string_opt_t;
+typedef [sml_type ("poll_desc list")] sml_value ML_polldesc_list_t;
+typedef [sml_type ("poll_info list")] sml_value ML_pollinfo_list_t;
+
+/******************** Exported run-time system types ********************/
+typedef [ptr] struct struct_iodesc *IODesc_t;
+typedef [ptr] struct struct_directory *Directory_t;
+typedef struct struct_time { int sec; int usec; } Time_t;
+
+/******************** Types for argument passing ********************/
+
+typedef struct struct_date {
+  int tm_sec;
+  int tm_min;
+  int tm_hour;
+  int tm_mday;
+  int tm_mon;
+  int tm_year;
+  int tm_wday;
+  int tm_yday;
+  int tm_isdst;
+} Date_t;
+
+
+/******************** IEEEReal support ********************/
+
+const int TO_NEAREST = 0;
+const int TO_NEGINF = 1;
+const int TO_POSINF = 2;
+const int TO_ZERO = 3;
+
+int getRoundingMode ();
+void setRoundingMode ([in] int mode);
+
+/******************** BinPrimIO and TextPrimIO support ********************/
+
+IODesc_t openFile ([in] ML_string_t s, [in] int mode);
+void closeFile ([in] IODesc_t iod);
+[sml_context] ML_charvec_t readTextVec ([in] IODesc_t iod, [in] int nbytes);
+int readTextArr (
+    [in] IODesc_t iod,
+    [in] ML_chararr_t arr,
+    [in] int nbytes,
+    [in] int start);
+int writeTextVec (
+    [in] IODesc_t iod,
+    [in] ML_charvec_t buf,
+    [in] int offset,
+    [in] int nbytes);
+int writeTextArr (
+    [in] IODesc_t iod,
+    [in] ML_chararr_t buf,
+    [in] int offset,
+    [in] int nbytes);
+[sml_context] ML_word8vec_t readBinVec ([in] IODesc_t iod, [in] int nbytes);
+int readBinArr (
+    [in] IODesc_t iod,
+    [in] ML_word8arr_t arr,
+    [in] int nbytes,
+    [in] int start);
+int writeBinVec (
+    [in] IODesc_t iod,
+    [in] ML_word8vec_t buf,
+    [in] int offset,
+    [in] int nbytes);
+int writeBinArr (
+    [in] IODesc_t iod,
+    [in] ML_word8arr_t buf,
+    [in] int offset,
+    [in] int nbytes);
+//[sml_context] getPos
+//[sml_context] setPos
+/* what about nonblocking I/O? */
+/* what about exceptions??? */
+
+/******************** TextIO support ********************/
+
+IODesc_t getStdIn ();
+IODesc_t getStdOut ();
+IODesc_t getStdErr ();
+
+/******************** OS support ********************/
+
+void errorName ([in] int err, [out] idl_string *name);
+void errorMessage ([in] int err, [out] idl_string *name);
+//[sml_context] void syserror
+
+/******************** OS.Process support ********************/
+
+//[sml_context] system
+//[sml_context] exit
+//[sml_context] terminate
+[sml_context] ML_string_opt_t getEnv ([in] idl_string ss);
+void sleep ([in, ref] Time_t *t);
+
+/******************** OS.FileSys support ********************/
+
+[sml_context] Directory_t openDir ([in] idl_string path);
+[sml_context] ML_string_opt_t readDir ([in] Directory_t dir);
+[sml_context] ML_unit_t rewindDir ([in] Directory_t dir);
+[sml_context] ML_unit_t closeDir ([in] Directory_t dir);
+[sml_context] ML_unit_t chDir ([in] idl_string path);
+[sml_context] ML_string_t getDir ();
+[sml_context] ML_unit_t mkDir ([in] idl_string path);
+[sml_context] ML_unit_t rmDir ([in] idl_string path);
+[sml_context] boolean isDir ([in] idl_string path);
+[sml_context] boolean isLink ([in] idl_string path);
+[sml_context] ML_string_t readLink ([in] idl_string path);
+[sml_context] ML_string_t fullPath ([in] idl_string path);
+[sml_context] ML_string_t realPath ([in] idl_string path);
+/* for modTime and fileSize, we have non-SML return types but we also want
+ * to be able to raise exceptions.
+ */
+//[sml_context] modTime
+//[sml_context] fileSize
+[sml_context] ML_unit_t setTime ([in] idl_string path, [in, unique] Time_t *t);
+[sml_context] ML_unit_t remove ([in] idl_string path);
+[sml_context] ML_unit_t rename ([in] idl_string old, [in] idl_string new);
+const int A_READ = 1;
+const int A_WRITE = 2;
+const int A_EXEC = 4;
+[sml_context] boolean access ([in] idl_string path, [in] int mode);
+[sml_context] ML_string_t tmpName ();
+[sml_context] ML_word8vec_t fileId ([in] idl_string path);
+
+/******************** OS.IO support ********************/
+
+const int IOD_KIND_FILE = 0;
+const int IOD_KIND_DIR = 1;
+const int IOD_KIND_SYMLINK = 2;
+const int IOD_KIND_TTY = 3;
+const int IOD_KIND_PIPE = 4;
+const int IOD_KIND_SOCKET = 5;
+const int IOD_KIND_DEVICE = 6;
+
+void ioDescKind ([in] IODesc_t iod, [out, ref] int *kind);
+[sml_context] ML_pollinfo_list_t poll (
+	[in] ML_polldesc_list_t pds,
+	[in, unique] Time_t *t);
+
+/******************** Time support ********************/
+
+void now ([out, ref] Time_t *t);
+
+/******************** Date support ********************/
+
+void gmTime ([in, ref] Time_t *t, [out, ref] Date_t *date);
+void localTime ([in, ref] Time_t *t, [out, ref] Date_t *date);
+
+
+/******************** Timer support ********************/
+
+void getCPUTime ([out, ref] Time_t *u, [out, ref] Time_t *s, [out, ref] Time_t *g);

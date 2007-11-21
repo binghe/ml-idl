@@ -1,0 +1,23 @@
+
+clib_name ("NCurses");
+sml_structure ("NCurses");
+sml_signature ("N_CURSES");
+
+cpp_quote ("#include \"ml-base.h\"");
+cpp_quote ("#include \"ml-values.h\"");
+cpp_quote ("#include \"ml-objects.h\"");
+
+typedef int WINDOW;
+typedef int *PWINDOW;
+
+
+PWINDOW initscr ();
+int clear ();
+int refresh ();
+int endwin ();
+int move ([in] int y, [in] int x);
+int addstr ([in,string] char *str);
+// void getmaxyx ([in] PWINDOW w, [out] int *x, [out] int *y);
+
+
+

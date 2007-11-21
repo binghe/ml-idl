@@ -1,0 +1,24 @@
+
+1. If you want to define a pointer to a structure, you better have an
+actual definition for that structure. For example, if you want to
+write: 
+  typedef struct { int x;} *fooptr;
+you need to write this as:
+  typedef struct { int x;} foo;
+  typedef foo *fooptr;
+
+Rationale: generation of marshalling and unmarshalling code for the
+structure.
+
+2. If you want an operation to return a type that requires attributes, 
+you need to typedef the type with the appropriate attributes. For
+example, if you want to return a sml_value_t value, you need to
+typedef it with the appropriate sml_type attribute.
+
+Rationale: IDL syntax is broken.
+
+3. typedef struct foo *fooptr;   should really have an [abstract]
+attribute. 
+
+4. a tuple of one argument is the same as that argument; a tuple of no 
+arguments is unit.

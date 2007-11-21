@@ -1,0 +1,30 @@
+# root Makefile for ml-idl tool
+#
+# COPYRIGHT (c) 2000 Bell Labs, Lucent Technologies.
+#
+# @configure_input@
+#
+
+SHELL =			/bin/sh
+
+build:
+	(cd src; make build)
+
+install:
+	(cd src; make install)
+
+local-clean:
+	rm -rf bin/.heap bin/ml-idl.*
+
+clean:	local-clean
+	(cd src; make clean)
+
+local-distclean:	local-clean
+	rm -f bin/build-ml
+	rm -f Makefile config.cache config.status config.log
+
+distclean:	local-distclean
+	(cd src; make distclean)
+
+devclean:	distclean
+	rm -f configure

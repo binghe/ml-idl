@@ -1,0 +1,12 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:564: checking for a BSD compatible install
+configure:621: checking for cpp
+configure:665: checking whether byte ordering is bigendian
+configure:755: checking size of char
+configure:794: checking size of short
+configure:833: checking size of int
+configure:872: checking size of long
+configure:911: checking size of char *
+configure:1074: checking host system type
