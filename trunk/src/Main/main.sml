@@ -46,16 +46,16 @@ structure Main : sig
 		  end
 	    (* end case *)
 	  end
-	    handle ex => (
-	      TextIO.output(TextIO.stdErr, concat[
-		  "uncaught exception ", exnName ex,
-		  " [", exnMessage ex, "]\n"
-	        ]);
-	      app (fn s => TextIO.output(TextIO.stdErr, concat[
-		  "  raised at ", s, "\n"
-	        ]))
-	        (SMLofNJ.exnHistory ex);
-	      OS.Process.failure)
-(*	      OS.Process.exit OS.Process.failure) *)
+	    handle Error.Quit => OS.Process.failure
+		 | ex => (
+		     TextIO.output(TextIO.stdErr, concat[
+			 "uncaught exception ", exnName ex,
+			 " [", exnMessage ex, "]\n"
+		       ]);
+		     app (fn s => TextIO.output(TextIO.stdErr, concat[
+			 "  raised at ", s, "\n"
+		       ]))
+		       (SMLofNJ.exnHistory ex);
+		     OS.Process.failure)
 
   end
