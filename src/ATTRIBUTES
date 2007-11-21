@@ -1,0 +1,34 @@
+
+Attributes are interesting beasts. They are annotations added to C
+declarations and prototypes to help drive the stub generation. The
+idea is that removing the attribute annotations should yield valid C
+declarations. 
+
+There are 6 classes of attributes. They differ in where they may
+occur. It is useful to understand this classification, especially if
+one wishes to extend a version of the IDL with custom attributes.
+
+1) Interface attributes can only appear before an interface definition.
+2) Type attributes can only appear in a type definition (type
+   def). (They control how the type definition appears in the stub code.)
+3) Operation attributes can only appear before an operation
+   declaration. (They indicate properties of the operation, and even
+   also annotate the result of the operation.)
+4) Pointer attributes can only appear before a pointer
+   declaration. (They indicate the type of pointer.)
+5) Field attributes can only appear before a declaration of a
+   parameter of an operation, or a field of a
+   structure/union. (Typically, these attributes depend on other
+   fields or other parameters)
+6) Usage attributes can only appear before a declaration. (They are
+   the most "generic" kind of attributes.)
+7) Parameter attributes can only appear before a parameter
+   declaration. (They denote the "direction" of a parameter.)
+
+In other words, before an operation declaration, one can have
+parameter, usage, field and pointer attributes. In a type definition,
+one can have type, usage, and pointer attributes. Before a field of a
+structure, one can have field, usage and pointer attributes. Before an 
+operation, one can have operation attributes, and even usage and
+pointer attributes (they then apply to the result type of the
+operation). 

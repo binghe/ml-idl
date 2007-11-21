@@ -1,0 +1,337 @@
+
+name Idl
+
+// keywords
+//keyword interface
+keyword import
+keyword const
+keyword typedef
+keyword switch
+keyword case
+keyword default
+keyword enum
+keyword struct
+keyword union
+
+// basic types
+keyword float
+keyword double
+keyword hyper
+keyword unsigned
+keyword int
+keyword long
+keyword short
+keyword small
+keyword char
+keyword boolean
+keyword byte
+keyword void
+keyword wchar_t
+
+// constants
+keyword TRUE
+keyword FALSE
+keyword NULL
+
+// attributes
+keyword string
+keyword size_is
+keyword ref
+keyword unique
+keyword ptr
+keyword in
+keyword out
+
+// com attributes
+//keyword uuid
+//keyword object
+
+// sml-specific
+keyword sml_structure
+keyword sml_signature
+keyword clib_name
+keyword clib_date
+keyword clib_version
+//keyword wffi_source   // could/should just be lib_name
+keyword sml_type      // attribute
+keyword sml_value   // base type
+keyword sml_context   // operation attribute
+keyword exclude       // type attribute
+keyword abstract      // type attribute
+keyword cpp_quote     // insert output for Runtime-C++ mapping
+keyword pre           // preprocessing
+keyword post          // postprocessing
+keyword call          // call replacement
+keyword sml_int       // native integer size
+keyword sml_word      // native word size
+
+// recognized, but ignored
+keyword error_status_t
+keyword ISO_LATIN1
+keyword ISO_MULTILINGUAL
+keyword ISO_UCS
+keyword idempotent
+keyword broadcast
+keyword maybe
+keyword reflect_deletions
+keyword ignore
+keyword context_handle
+keyword first_is
+keyword last_is
+keyword length_is
+keyword min_is
+keyword max_is
+keyword transmit_as
+keyword handle
+keyword switch_type
+keyword switch_is
+keyword handle_t
+//keyword local
+//keyword version
+
+token STRING = '\"([^"]|\\\")*\"' of string
+token INT32 = '(~)?[0-9]+' of int32
+token WORD32 = '"0wx"[0-9a-fA-F]+' of word32
+token UUID = '[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+' of string
+
+token DDOT = ".."
+token DOT = "."
+token COMMA = ","
+token LPAREN = "("
+token RPAREN = ")"
+token LBRACK = "["
+token RBRACK = "]"
+token LBRACE = "{"
+token RBRACE = "}"
+token SEMI = ";"
+token COLON = ":"
+token ASTERISK = "*" of string     // count asterisks
+token QUOTE = "'"
+token EQSIGN = "="
+token DASH = "-"
+
+comment "//"
+comment "/*" "*/"
+
+
+start start
+
+rule start = PT of (top_level*)
+
+rule top_level = 
+// Interface of ((LBRACK interface_attribute+, [COMMA] RBRACK)?
+//                               interface ID (COLON ID)? LBRACE  
+//                               (import STRING+, [COMMA] SEMI)?
+//                               declaration*
+//                               RBRACE)
+                 Import of (import STRING+, [COMMA] SEMI)
+//               | Forward of (interface ID SEMI)
+               | TopDecl of declaration  // SEMI in declaration
+               | StructName of (sml_structure LPAREN STRING RPAREN SEMI)
+               | SigName of (sml_signature LPAREN STRING RPAREN SEMI)
+               | CLibName of (clib_name LPAREN STRING RPAREN SEMI)
+               | CLibVersion of (clib_version LPAREN STRING RPAREN SEMI)
+               | CLibDate of (clib_date LPAREN STRING RPAREN SEMI)
+               | CppQuote of (cpp_quote LPAREN STRING RPAREN SEMI)
+
+//rule interface_component = Export of export
+//                         | Oper of ((LBRACK operation_attribute+, [COMMA] RBRACK)?
+//                                    simple_type_spec ID
+//param_declarators SEMI)
+
+rule declaration = Type of (typedef (LBRACK type_attribute+, [COMMA] RBRACK)? type_spec 
+                              declarator+, [COMMA] SEMI)
+                 | Const of (const const_type_spec ID EQSIGN const_exp SEMI)
+                 | Tagged of (tagged_declarator SEMI)
+                 | Operation of ((LBRACK operation_attribute+, [COMMA] RBRACK)?
+                                    simple_type_spec ID param_declarators SEMI)
+
+rule const_type_spec = CT_Integer of primitive_integer_type
+                     | CT_Char of char
+                     | CT_Bool of boolean
+                     | CT_VoidPtr of (void ASTERISK)
+                     | CT_CharPtr of (char ASTERISK)
+
+rule const_exp = CE_Integer of integer_const_exp
+               | CE_String of STRING
+               | CE_True of TRUE
+               | CE_False of FALSE
+               | CE_Null of NULL
+               | CE_Id of ID
+
+rule integer_const_exp = CE_Int of INT32
+                       | CE_Word of WORD32
+
+rule type_spec = TS_Simple of simple_type_spec
+               | TS_Constructed of constructed_type_spec
+
+rule simple_type_spec = Float of float
+                      | Double of double
+                      | Integer of integer_type
+                      | Character of char_type
+                      | Bool of boolean
+                      | Byte of byte
+                      | Void of void
+                      | Handle of handle_t
+                      | ErrorStatus of error_status_t
+                      | IsoLatin1 of ISO_LATIN1
+                      | IsoMulti of ISO_MULTILINGUAL
+                      | IsoUcs of ISO_UCS
+                      | TS_Id of ID
+                      | SmlValue of sml_value
+
+rule declarator = Decl of (ASTERISK* direct_declarator)
+
+rule direct_declarator = D_Id of ID
+                       | D_PId of (LPAREN ID RPAREN)
+                       | D_Array of array_declarator
+                       | D_Function of function_declarator
+
+rule tagged_declarator = TG_Struct of tagged_struct_declarator
+                       | TG_Union of tagged_union_declarator
+
+
+rule integer_type = PrimitiveInteger of primitive_integer_type
+                  | HInt of (hyper int?)
+                  | HUInt of (hyper unsigned int?)
+                  | UHInt of (unsigned hyper int?)
+
+rule primitive_integer_type = Signed of signed_integer
+                            | Unsigned of unsigned_integer
+                            | SmlInt of sml_int
+                            | SmlWord of sml_word
+
+rule signed_integer = Long of (long int?)
+                    | Short of (short int?)
+                    | Small of (small int?)
+                    | Int of int
+
+rule unsigned_integer = ULong of (unsigned long int?)
+                      | UShort of (unsigned short int?)
+                      | USmall of (unsigned small int?)
+                      | UInt of (unsigned int)
+                      | LongU of (long unsigned int?)
+                      | ShortU of (short unsigned int?)
+                      | SmallU of (small unsigned int?)
+
+rule char_type = UChar of (unsigned char)
+               | Char of char
+               | UWChar of (unsigned wchar_t)
+               | WChar of wchar_t
+
+rule constructed_type_spec = Struct of (struct LBRACE (member SEMI)+ RBRACE)
+                           | Union of union_type
+                           | Enum of (enum LBRACE identifier+, [COMMA] RBRACE)
+                           | TaggedD of tagged_declarator
+// | Pipe of pipe_type
+
+rule tagged_struct_declarator = S_Tag of (struct ID)
+                              | S_TagBody of (struct ID LBRACE 
+                                               (member SEMI)+ RBRACE)
+
+rule member = Field of ((LBRACK field_attribute+, [COMMA] RBRACK)? 
+                        type_spec declarator+, [COMMA])
+
+rule tagged_union_declarator = U_Tag of (union ID)
+                             | U_TagBody of tagged_union
+
+rule union_type = EUnion of (union switch LPAREN switch_type_spec ID RPAREN ID?
+                                 LBRACE union_body RBRACE)
+                | NEUnion of (union LBRACE union_body_ne RBRACE)
+
+rule switch_type_spec = SW_Integer of primitive_integer_type
+                      | SW_Char of char_type
+                      | SW_Bool of boolean
+                      | SW_Id of ID
+
+rule tagged_union = TaggedEUnion of (union ID switch LPAREN switch_type_spec ID RPAREN ID?
+                                     LBRACE union_body RBRACE)
+                  | TaggedNEUnion of (union ID LBRACE union_body_ne RBRACE)
+
+rule union_body = Body of union_case+
+
+rule union_body_ne = BodyNE of union_case_ne+
+
+rule union_case = UnionCase of ((case const_exp COLON)+ union_arm)
+                | DefaultCase of (default COLON union_arm)
+
+rule union_case_ne = UnionCaseNE of (LBRACK case LPAREN const_exp+, [COMMA] RPAREN RBRACK union_arm)
+                   | DefaultCaseNE of (LBRACK default RBRACK union_arm)
+
+rule union_arm = UnionArm of (member? SEMI)
+
+rule union_type_switch_attr = A_SwitchType of (switch_type LPAREN switch_type_spec RPAREN)
+
+rule union_instance_switch_attr = A_SwitchIs of (switch_is LPAREN attr_var RPAREN)
+
+rule identifier = IdValue of (ID EQSIGN integer_const_exp)
+                | Id of ID
+
+rule array_declarator = ArrayOne of (direct_declarator LBRACK array_bound? RBRACK)
+                      | ArrayTwo of (direct_declarator LBRACK array_bound DDOT array_bound RBRACK)
+
+rule array_bound = BoundAst of ASTERISK
+                 | BoundInt of integer_const_exp
+                 | BoundId of ID
+
+
+rule param_declarators = Empty of (LPAREN RPAREN)
+                       | EmptyVoid of (LPAREN void RPAREN)
+                       | Params of (LPAREN param_declarator+, [COMMA] RPAREN)
+
+rule param_declarator = Param of (LBRACK param_attribute+, [COMMA] RBRACK type_spec declarator)
+
+rule function_declarator = Function of (direct_declarator param_declarators)
+
+
+// attributes
+
+//rule interface_attribute = A_Uuid of (LPAREN UUID RPAREN)
+//                         | A_Version of (LPAREN INT32 DOT INT32 RPAREN)
+//                         | A_Local of local
+
+rule param_attribute = A_In of in
+                     | A_Out of out
+                     | A_ParamField of field_attribute
+
+rule type_attribute = A_TransmitAs of (transmit_as LPAREN simple_type_spec RPAREN)
+                    | A_Handle of handle
+                    | A_TypeUsage of usage_attribute
+                    | A_TypeUnion of union_type_switch_attr
+                    | A_TypePtr of ptr_attribute
+                    | A_Exclude of exclude
+                    | A_Abstract of abstract
+
+rule usage_attribute = A_String of string
+                     | A_ContextHandle of context_handle
+                     | A_SmlType of (sml_type LPAREN STRING RPAREN)
+
+rule field_attribute = A_FirstIs of (first_is LPAREN attr_var+, [COMMA] RPAREN)
+                     | A_LastIs of (last_is LPAREN attr_var+, [COMMA] RPAREN)
+                     | A_LengthIs of (length_is LPAREN attr_var+, [COMMA] RPAREN)
+                     | A_MinIs of (min_is LPAREN attr_var+, [COMMA] RPAREN)
+                     | A_MaxIs of (max_is LPAREN attr_var+, [COMMA] RPAREN)
+                     | A_SizeIs of (size_is LPAREN attr_var+, [COMMA] RPAREN)
+                     | A_FieldUsage of usage_attribute
+                     | A_FieldUnion of union_instance_switch_attr
+                     | A_Ignore of ignore
+                     | A_FieldPtr of ptr_attribute
+
+rule attr_var = VarPtr of (ASTERISK ID)
+              | Var of ID
+
+rule ptr_attribute = A_Ref of ref
+              | A_Unique of unique
+              | A_Ptr of ptr
+
+rule operation_attribute = A_Idempotent of idempotent
+                         | A_Broadcast of broadcast
+                         | A_Maybe of maybe
+                         | A_ReflectDeletions of reflect_deletions
+                         | A_OperationUsage of usage_attribute
+                         | A_OperationPtr of ptr_attribute
+                         | A_SmlContext of sml_context
+                         | A_Pre of (pre LPAREN STRING RPAREN)
+                         | A_Post of (post LPAREN STRING RPAREN)
+                         | A_Call of (call LPAREN STRING RPAREN)
+

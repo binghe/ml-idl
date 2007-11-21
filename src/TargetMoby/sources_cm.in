@@ -1,0 +1,25 @@
+(* sources.cm
+ *
+ * COPYRIGHT (c) 2001 Bell Labs, Lucent Technologies
+ *
+ * Import some stuff from the Moby source tree.
+ *
+ * @configure_input@
+ *)
+
+Group
+
+  structure FloatLit
+  signature GUID
+  structure GUID
+
+  structure MBX
+  structure MBXPrim
+  structure MBXPP
+  structure MBXUtil
+
+is
+
+ @MOBY_DIR@/src/mbx-lib/sources.cm
+ @MOBY_DIR@/src/util/sources.cm
+
