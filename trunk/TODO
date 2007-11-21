@@ -1,0 +1,33 @@
+
+SHORT TERM:
+- hex notation for constants
+
+FRONTEND:
+- implement directly
+- for type checking, parametrize front-end by attributes & directives
+  (sml_structure, sml_library...)
+- rationalize IDL --> IIL translation
+
+IIL:
+- add source line number to IIL 
+- wchar
+- 64 bit quantities
+- enum (datatype on ML side)
+- for specific attributes, table-driven recognition: IIL structure is
+  a functor parameterized by the allowed attributes
+
+SMLNJ BACKEND:
+- figure out handling of [in,out] params (disabled until then)
+  for example, for string, you copy-in, copy-out
+- additional [out] possibilities (aside from [ref]): string, arrays
+- smltype ("foo") <use "foo" inlined> or smltype ("foo","bar") <use
+    "foo" inlined, write type foo = bar
+
+MOBY BACKEND:
+- GUID attribute, inject into the generated MBX code
+
+GENERAL:
+- exceptions (new attributes; think!)
+- check dependent types
+- add callbacks to the abstract framework   (???)
+
