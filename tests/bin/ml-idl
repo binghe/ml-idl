@@ -1,3 +1,0 @@
-#!/bin/sh
-#
-exec /home/adrassi/smlnj/bin/sml @SMLload=/stage/sml/Dev/runtime-stuff/ml-idl/bin/.heap/ml-idl $@
