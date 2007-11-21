@@ -1,12 +1,23 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl COPYRIGHT (c) 2001 Bell Labs, Lucent Technologies.
+dnl COPYRIGHT (c) 2007 Ths SML/NJ Fellowship.
+dnl All rights reserved.
 dnl
 dnl Configuration for the ml-idl tool
 dnl
 
-AC_INIT(src/IIL/idl-translate.sml)
+dnl NOTE: MANTICORE_DIST_VERSION is an M4 variable defined in config/aclocal.m4
+dnl
+AC_INIT(ml-idl,1.0,http://smlnj.org)
+
+AC_PREREQ(2.59)
 AC_CONFIG_AUX_DIR(config)
+
+dnl
+dnl include extra macros
+dnl
+sinclude(config/check_smlnj.m4)
+sinclude(config/check_smlnj_heap_suffix.m4)
 
 AC_PREFIX_DEFAULT(/usr/local)
 
@@ -15,12 +26,6 @@ AC_PATH_PROGS(CPP_CMD, cpp, no, $PATH:/lib)
 if test x$CPP_CMD = xno ; then
   AC_MSG_ERROR([no cpp found])
 fi
-
-dnl
-dnl include extra macros
-dnl
-sinclude(config/check_smlnj.m4)
-sinclude(config/check_smlnj_heap_suffix.m4)
 
 dnl
 dnl Figure out the sizes of a few things
@@ -106,16 +111,11 @@ dnl check that we have a compatible version of SML/NJ
 dnl
 CHECK_SMLNJ([AC_MSG_ERROR([must have SML/NJ installed])])
 if test $SMLNJ_MAJOR_VERSION -eq 110 \
-   -a $SMLNJ_MINOR_VERSION -eq 0 \
-   -a $SMLNJ_PATCH_VERSION -ge 6
-then
-  USING_NEW_CM="FALSE"
-elif test $SMLNJ_MAJOR_VERSION -eq 110 \
-  -a $SMLNJ_MINOR_VERSION -ge 32
+  -a $SMLNJ_MINOR_VERSION -ge 67
 then
   USING_NEW_CM="TRUE"
 else
-  AC_MSG_ERROR([installation requires either version 110.0.6+ or 110.32+ of SML/NJ])
+  AC_MSG_ERROR([installation requires either version 110.67+ of SML/NJ])
 fi
 
 dnl
@@ -142,29 +142,24 @@ AC_SUBST(INSTALL_SMLNJ_WRAPPER)
 
 dnl ******************** Output ********************
 
-if test x$USING_NEW_CM = xFALSE ; then
-  BUILD_ML="$LOCAL_BINDIR/build-ml"
-  BUILD_ML_REWRITE="bin/build-ml:config/build-ml.in"
-else
-  BUILD_ML="build-ml"
-fi
-AC_SUBST(BUILD_ML)
-AC_SUBST(BUILD_ML_FLAGS)
-
 dnl
 dnl write output
 dnl
-AC_OUTPUT(\
+AC_CONFIG_FILES(\
 dnl ***** Makefiles *****
   Makefile \
   src/Makefile \
 dnl ***** CM files *****
   src/sources.cm:src/sources_cm.in
   src/Main/sources.cm:src/Main/sources_cm.in
-  src/TargetMoby/sources.cm:src/TargetMoby/sources_cm.in
-dnl ***** shell scripts *****
-  $BUILD_ML_REWRITE \
-  bin/install-sml-wrapper.sh:config/install-sml-wrapper_sh.in)
+  src/TargetMoby/sources.cm:src/TargetMoby/sources_cm.in)
 
-AC_OUTPUT_COMMANDS([chmod +x bin/install-sml-wrapper.sh $BUILD_ML])
+dnl
+dnl shell scripts
+dnl
+AC_CONFIG_FILES([
+  bin/install-sml-wrapper.sh:config/install-sml-wrapper_sh.in
+], [chmod +x bin/install-sml-wrapper.sh])
+
+AC_OUTPUT
 
