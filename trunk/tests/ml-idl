@@ -1,4 +1,0 @@
-#!/bin/sh
-#
-#exec sml @SMLload=/stage/sml/Dev/runtime-stuff/ml-idl/bin/.heap/ml-idl $@
-exec sml @SMLload=ml-idl.x86-linux $@
