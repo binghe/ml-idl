@@ -5,28 +5,29 @@
 
 Group is
 
- @SMLNJ_LIB_CM@
- @PP_LIB_CM@
- ml-yacc-lib.cm
+  $/basis.cm
+  @SMLNJ_LIB_CM@
+  @PP_LIB_CM@
+  $/ml-yacc-lib.cm
 
- main.sml
- options.sml
- error.sml
- verbose.sml
+  main.sml
+  options.sml
+  error.sml
+  verbose.sml
 
- ../Util/util.sml
- ../Util/generate-sml-util.sml
+  ../Util/util.sml
+  ../Util/generate-sml-util.sml
 
- ../Parser/idl.lex
- ../Parser/idl.grm
- ../Parser/idl-exn-sig.sml
- ../Parser/idl-exn.sml
- ../Parser/idl-parser-sig.sml
- ../Parser/idl-parser.sml
- ../Parser/idl-pt-sig.sml
- ../Parser/idl-pt.sml
+  ../Parser/idl.lex
+  ../Parser/idl.grm
+  ../Parser/idl-exn-sig.sml
+  ../Parser/idl-exn.sml
+  ../Parser/idl-parser-sig.sml
+  ../Parser/idl-parser.sml
+  ../Parser/idl-pt-sig.sml
+  ../Parser/idl-pt.sml
 
- ../IIL/iil.sml
- ../IIL/idl-translate.sml
- ../IIL/concrete-sig.sml
+  ../IIL/iil.sml
+  ../IIL/idl-translate.sml
+  ../IIL/concrete-sig.sml
 

@@ -1,33 +1,33 @@
 (* sources.cm
  *
- * Generated automatically from sources_cm.in by configure.
+ * src/Main/sources.cm.  Generated from sources_cm.in by configure.
  *)
 
 Group is
 
- $/smlnj-lib.cm
- $/basis.cm
- $/pp-lib.cm
- $/ml-yacc-lib.cm
+  $/basis.cm
+  $/smlnj-lib.cm
+  $/pp-lib.cm
+  $/ml-yacc-lib.cm
 
- main.sml
- options.sml
- error.sml
- verbose.sml
+  main.sml
+  options.sml
+  error.sml
+  verbose.sml
 
- ../Util/util.sml
- ../Util/generate-sml-util.sml
+  ../Util/util.sml
+  ../Util/generate-sml-util.sml
 
- ../Parser/idl.lex
- ../Parser/idl.grm
- ../Parser/idl-exn-sig.sml
- ../Parser/idl-exn.sml
- ../Parser/idl-parser-sig.sml
- ../Parser/idl-parser.sml
- ../Parser/idl-pt-sig.sml
- ../Parser/idl-pt.sml
+  ../Parser/idl.lex
+  ../Parser/idl.grm
+  ../Parser/idl-exn-sig.sml
+  ../Parser/idl-exn.sml
+  ../Parser/idl-parser-sig.sml
+  ../Parser/idl-parser.sml
+  ../Parser/idl-pt-sig.sml
+  ../Parser/idl-pt.sml
 
- ../IIL/iil.sml
- ../IIL/idl-translate.sml
- ../IIL/concrete-sig.sml
+  ../IIL/iil.sml
+  ../IIL/idl-translate.sml
+  ../IIL/concrete-sig.sml
 
