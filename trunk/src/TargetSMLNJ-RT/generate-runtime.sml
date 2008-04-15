@@ -347,6 +347,6 @@ structure GenerateRuntime : sig end = struct
 	end 
 handle ex => (print(concat["uncaught exception ", exnName ex, "\n"]); raise ex)
 
-  val _ = CmdOptions.register ("c", generate)
+  val _ = CmdOptions.register ("new-rt", generate)
 
 end

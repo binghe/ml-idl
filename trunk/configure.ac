@@ -105,37 +105,46 @@ AC_SUBST(MOBY_DIR)
 
 dnl ******************** Supported targets ********************
 
+GENERATE_HEADER_STRUCT=GenerateHeader
+
 # glue code for the classic-runtime system
 #
-OLD_TARGET=""
+GENERATE_CLASSIC_STRUCT="GenerateClassicRuntime"
 AC_ARG_ENABLE(classic,
   [AS_HELP_STRING(["--disable-classic"], ["disable the classic-runtime system target"])],
-  [],
-  [OLD_TARGET=""])
+  [GENERATE_CLASSIC_STRUCT="Dummy"],
+  [])
 
 # glue code for the new-runtime system
 #
-NEW_TARGET=""
+GENERATE_RUNTIME_STRUCT="GenerateRuntime"
 AC_ARG_ENABLE(new,
   [AS_HELP_STRING(["--disable-new"], ["disable the new-runtime system target"])],
-  [],
-  [NEW_TARGET=""])
+  [GENERATE_RUNTIME_STRUCT="Dummy"],
+  [])
 
 # SML glue code
 #
-SML_TARGET=""
+GENERATE_SMLNJ_STRUCT="GenerateSMLNJ"
 AC_ARG_ENABLE(sml,
-  [AS_HELP_STRING(["--disable-sml"], ["disable the SML target"])],
-  [],
-  [SML_TARGET=""])
+  [AS_HELP_STRING(["--disable-smlnj"], ["disable the SML/NJ target"])],
+  [GENERATE_SMLNJ_STRUCT="Dummy"],
+  [])
 
 # Moby MBX-file glue code
 #
-MOBY_TARGET=""
+GENERATE_MOBY_STRUCT="Dummy"
 AC_ARG_ENABLE(moby,
   [AS_HELP_STRING(["--enable-moby"], ["enable the Moby language target"])],
-  [],
-  [MOBY_TARGET=""])
+  [GENERATE_MOBY_STRUCT="GenerateMBX"],
+  [])
+
+AC_SUBST(GENERATE_HEADER_STRUCT)
+AC_SUBST(GENERATE_CLASSIC_STRUCT)
+AC_SUBST(GENERATE_RUNTIME_STRUCT)
+AC_SUBST(GENERATE_SMLNJ_STRUCT)
+AC_SUBST(GENERATE_MOBY_STRUCT)
+
 
 dnl ******************** SML/NJ Compiler configuration ********************
 
@@ -209,7 +218,9 @@ dnl ***** Makefiles *****
 dnl ***** CM files *****
   src/sources.cm:src/sources_cm.in
   src/Main/sources.cm:src/Main/sources_cm.in
-  src/TargetMoby/sources.cm:src/TargetMoby/sources_cm.in)
+  src/TargetMoby/sources.cm:src/TargetMoby/sources_cm.in
+dnl ***** SML files *****
+  src/Main/targets.sml:src/Main/targets_sml.in)
 
 dnl
 dnl shell scripts

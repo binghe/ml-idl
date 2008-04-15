@@ -1,0 +1,32 @@
+(* targets.sml
+ *
+ * COPYRIGHT (c) 2008 The Fellowship of SML/NJ (http://www.smlnj.org)
+ * All rights reserved.
+ *
+ * @configure_input@
+ *
+ * This file contains references to the target structures that are enabled in
+ * this configuration of the ml-idl tool.  These references force the inclusion
+ * of the corresponding strucutures, which then take care of their own registration.
+ *)
+
+
+structure Targets : sig end =
+  struct
+
+    local
+      structure Dummy = struct end
+    in
+
+    structure GenerateHeader = @GENERATE_HEADER_STRUCT@
+    structure GenerateClassicRuntime = @GENERATE_CLASSIC_STRUCT@
+    structure GenerateRuntime = @GENERATE_RUNTIME_STRUCT@
+    structure GenerateSMLNJ = @GENERATE_SMLNJ_STRUCT@
+
+(* only if Moby is enabled
+    structure GenerateMoby = @GENERATE_MOBY_STRUCT@
+*)
+
+    end
+
+  end
