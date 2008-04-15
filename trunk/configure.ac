@@ -57,7 +57,7 @@ dnl allow the user to override the location of the SML/NJ library
 dnl
 SMLNJ_LIB_DIR=""
 AC_ARG_WITH(smlnj-lib,
-  [  --with-smlnj-lib=PATH   specify location of SML/NJ Library],
+  [AS_HELP_STRING([--with-smlnj-lib=PATH], [specify location of SML/NJ Library])],
   SMLNJ_LIB_DIR=$with_smlnj_lib)
 if test x$with_smlnj_lib = xyes -o x$with_smlnj_lib = xno ; then
   AC_MSG_ERROR([--with-smlnj-lib option must specify directory argument])
@@ -85,7 +85,7 @@ dnl
 dnl allow user to specify location of Moby
 dnl
 AC_ARG_WITH(moby,
-  [  --with-moby=PATH        specify root of Moby distribution],
+  [AS_HELP_STRING([--with-moby=PATH], [specify root of Moby distribution])],
   MOBY_DIR=$with_moby)
 if test x$with_moby = xyes -o x$with_moby = xno ; then
   AC_MSG_ERROR([--with-moby option must specify directory argument])
@@ -102,6 +102,40 @@ dnl
   BUILD_ML_FLAGS="-DSUPPORT_MOBY"
 fi
 AC_SUBST(MOBY_DIR)
+
+dnl ******************** Supported targets ********************
+
+# glue code for the classic-runtime system
+#
+OLD_TARGET=""
+AC_ARG_ENABLE(classic,
+  [AS_HELP_STRING(["--disable-classic"], ["disable the classic-runtime system target"])],
+  [],
+  [OLD_TARGET=""])
+
+# glue code for the new-runtime system
+#
+NEW_TARGET=""
+AC_ARG_ENABLE(new,
+  [AS_HELP_STRING(["--disable-new"], ["disable the new-runtime system target"])],
+  [],
+  [NEW_TARGET=""])
+
+# SML glue code
+#
+SML_TARGET=""
+AC_ARG_ENABLE(sml,
+  [AS_HELP_STRING(["--disable-sml"], ["disable the SML target"])],
+  [],
+  [SML_TARGET=""])
+
+# Moby MBX-file glue code
+#
+MOBY_TARGET=""
+AC_ARG_ENABLE(moby,
+  [AS_HELP_STRING(["--enable-moby"], ["enable the Moby language target"])],
+  [],
+  [MOBY_TARGET=""])
 
 dnl ******************** SML/NJ Compiler configuration ********************
 
