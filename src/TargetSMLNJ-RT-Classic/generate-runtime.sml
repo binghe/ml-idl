@@ -444,6 +444,6 @@ structure GenerateClassicRuntime : sig end = struct
 	end 
 handle ex => (print(concat["uncaught exception ", exnName ex, "\n"]); raise ex)
 
-  val _ = CmdOptions.register ("classic-c", generate)
+  val _ = CmdOptions.register ("classic", generate)
 
 end

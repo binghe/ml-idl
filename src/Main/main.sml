@@ -9,6 +9,9 @@ structure Main : sig
 
   end  = struct
 
+  (* reference to Targets structure to frce the inclusion of the targets *)
+    structure Targets = Targets
+
     fun translateFile (file) = (
 	  Verbose.message1 ["Input file ",file];
 	  IdlTranslate.translate (Util.withInputFile (file, IdlParser.parse), file)
