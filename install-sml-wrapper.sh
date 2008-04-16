@@ -46,4 +46,3 @@ $INSTALL_DATA -D $HEAP_IMAGE $INSTALL_DIR/.heap/$HEAP_IMAGE || exit 1
 rm -f $TARGET
 
 exit 0
-
