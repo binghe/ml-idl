@@ -42,7 +42,9 @@ structure CmdOptions : sig
 
     val targets = ref([] : (string * gen_act) list)
 
-    fun register tgt = (print "registering ...\n"; targets := tgt :: !targets)
+    fun register tgt = (
+	  print(concat["registering ", #1 tgt, "\n"]);
+	  targets := tgt :: !targets)
 
     val header = "Usage: ml-idl [OPTION...] file"
 
