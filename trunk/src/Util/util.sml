@@ -5,7 +5,7 @@
 
 structure Util = struct
 
-  datatype file_type = FILE_SML | FILE_C | FILE_CPP | FILE_MAKEFILE | FILE_MBX
+  datatype file_type = FILE_SML | FILE_C | FILE_CXX | FILE_MAKEFILE | FILE_MBX
   
   local 
     fun curry f x = (fn y => f (x,y))
@@ -16,7 +16,7 @@ structure Util = struct
     fun outF os str lst = out os [Format.format str lst]
   end
 
-  local 
+  local
     val i = ref (0)
   in
     fun gensym () = let
@@ -27,9 +27,20 @@ structure Util = struct
     end
   end
 
+  (* convert a file name that might have "-" and "." characters to a CPP symbol.  For
+   * example, "foo-bar.hxx" is mapped to "__FOO_BAR_HXX__".
+   *)
+    fun toCPPSymbol s = let
+	  fun tr #"." = #"_"
+	    | tr #"-" = #"_"
+	    | tr c = Char.toUpper c
+	  in
+	    String.concat["__", String.map tr s, "__"]
+	  end
+
   fun commentStrings (FILE_SML) = {start="(*",finish=" *)", cont=" *"}
     | commentStrings (FILE_C) = {start="/*",finish=" */",cont=" *"}
-    | commentStrings (FILE_CPP) = {start="//",finish="//",cont="//"}
+    | commentStrings (FILE_CXX) = {start="//",finish="//",cont="//"}
     | commentStrings (FILE_MAKEFILE) = {start="#",finish="#",cont="#"}
     | commentStrings (FILE_MBX) = {start="//", finish="//",cont="//"}
 
