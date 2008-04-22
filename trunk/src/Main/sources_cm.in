@@ -42,7 +42,6 @@ Group is
   ../TargetSMLNJ-RT-Classic/generate-runtime-glue.sml
 
   ../TargetSMLNJ-RT/generate-runtime.sml
-  ../TargetSMLNJ-RT/generate-runtime-glue.sml
 
 #if defined(SUPPORT_MOBY)
   (* moby-idl *)
