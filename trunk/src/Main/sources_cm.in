@@ -32,7 +32,7 @@ Group is
   ../IIL/idl-translate.sml
   ../IIL/concrete-sig.sml
 
-  ../TargetHeader/generate-header.sml
+  ../TargetHeader/generate-header-fn.sml
 
   ../TargetSMLNJ/generate-smlnj.sml
   ../TargetSMLNJ/generate-sml-fn.sml

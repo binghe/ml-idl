@@ -9,7 +9,8 @@
 Group
   structure Main
 
-  structure GenerateHeader
+  structure GenerateCHeader
+  structure GenerateCXXHeader
   structure GenerateSMLNJ
   structure GenerateClassicRuntime
   structure GenerateRuntime
