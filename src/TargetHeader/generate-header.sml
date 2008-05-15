@@ -1,9 +1,23 @@
-(* generate-header.sml
+(* generate-header-fn.sml
  *
  * COPYRIGHT (c) 2001 Bell Labs, Lucent Technologies
  *)
 
-structure GenerateHeader : sig 
+(* this module should be converted to a functor that factors out
+ * the target differences:
+ *
+ *	".h" vs ".hxx" extension
+ *	ml_val_t vs ML_Value
+ *	ml-base.h vs. SMLNJ/base.h
+ *	ml_state_t vs. ML_Context
+ *)
+
+functor GenerateHeaderFn (
+    val fileExt : string
+    val mlValueTy : string
+    val mlBasePath : string
+    val target : string
+  ) : sig
 
     val generate : {
 	    srcDir: string, srcFile: string, dstDir: string option,
@@ -53,7 +67,8 @@ structure GenerateHeader : sig
             | I.TS_Array {spec,size} => (
 		Error.bug ["Arrays unsupported still..."];
         	"void *"^n)
-            | I.TS_Sml (s) => "ml_val_t "^n
+            | I.TS_Sml (s) => (* "ml_val_t "^n *) (* FIXME *)
+		"ML_Value " ^ n
             | I.TS_Int => "int "^n
             | I.TS_Word => "unsigned int "^n
             | _ => (
@@ -118,7 +133,11 @@ structure GenerateHeader : sig
 		  prf ("#ifndef %s\n", [F.STR hsym]);
 		  prf ("#define %s\n", [F.STR hsym]);
 		  pr "\n";
+(* FIXME: the following is target specific! *)
+(** OLD runtime
 		  pr ("#include \"ml-base.h\"\n");
+*)
+		  pr ("#include \"SMLNJ/base.h\"\n"); (* new runtime *)
 		  pr "\n";
 		  List.app genDcl decls;
 		  pr "\n";
