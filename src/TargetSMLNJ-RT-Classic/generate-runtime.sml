@@ -435,7 +435,7 @@ structure GenerateClassicRuntime : sig end = struct
 	val file_c = replace_extension (srcFile,"","c")
 	in
           GenerateHeader.generate {
-	      srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec
+	      srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=false
 	    };
 	  Verbose.message1 ["Generating C code in file ",file_c];
 	  glob_symtable := SOME (symtable);

@@ -374,15 +374,14 @@ structure GenerateRuntime : sig end =
 		end
 	  fun all os = (
 		out os ["#include \"SMLNJ/base.h\""];
-		out os ["#include \"ml-values.h\""];
-		out os ["#include \"ml-objects.h\""];
+		out os ["#include \"SMLNJ/ml-values.hxx\""];
 		out os ["#include \"", file_hxx, "\""];
 		out os ["#include \"", proto_file, "\""];
 		global os) 
 	  val file_cxx = replace_extension (srcFile, "", "cxx")
 	  in
 	    GenerateHeader.generate {
-		srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec
+		srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=true
 	      };
 	    Verbose.message1 ["Generating C++ code in file ", file_cxx];
 	    glob_symtable := SOME (symtable);
