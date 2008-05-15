@@ -7,7 +7,7 @@ structure GenerateHeader : sig
 
     val generate : {
 	    srcDir: string, srcFile: string, dstDir: string option,
-	    spec: IIL.iil
+	    spec: IIL.iil, cxx : bool
 	  } -> unit
 
   end = struct
@@ -71,9 +71,9 @@ structure GenerateHeader : sig
 
     fun param2str (I.Prm{name, spec, ...}) = type2str (Atom.toString name, spec)
 
-    fun generate {srcDir, srcFile, dstDir, spec} = let
+    fun generate {srcDir, srcFile, dstDir, spec, cxx} = let
 	  val (I.IIL{decls, ...}) = spec
-	  val file = Util.replace_extension (srcFile, "", "h")
+	  val file = Util.replace_extension (srcFile, "", if cxx then "hxx" else "h")
 	  val hsym = headerSym srcFile
 	  fun gen outS = let
 		fun pr s = TextIO.output(outS, s)
@@ -129,6 +129,14 @@ structure GenerateHeader : sig
 	    Util.withOutputFile (Util.FILE_C, file, gen)
 	  end
 
-    val _ = CmdOptions.register ("header", generate)
+    fun genCHeader {srcDir, srcFile, dstDir, spec} =
+	  generate {srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=false}
+
+    fun genCXXHeader {srcDir, srcFile, dstDir, spec} =
+	  generate {srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=true}
+
+    val _ = (
+	  CmdOptions.register ("c-header", genCHeader);
+	  CmdOptions.register ("c++-header", genCXXHeader))
 
   end
