@@ -380,8 +380,8 @@ structure GenerateRuntime : sig end =
 		global os) 
 	  val file_cxx = replace_extension (srcFile, "", "cxx")
 	  in
-	    GenerateHeader.generate {
-		srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=true
+	    GenerateCXXHeader.generate {
+		srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec
 	      };
 	    Verbose.message1 ["Generating C++ code in file ", file_cxx];
 	    glob_symtable := SOME (symtable);
