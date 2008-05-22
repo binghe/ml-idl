@@ -92,15 +92,15 @@ structure GenerateRuntime : sig end =
 	| str_constant (p,I.E_Id (x)) = str_constant (p,p_lookup (p,x))  (* assume alpha-renaming all the way through *)
 	| str_constant (p,I.E_String (x)) = x
 
-      fun makeTuple (results:string list,what:string -> string):string list = 
-	case (results)
-	  of [] => [what ("ML_UNIT")]
-	   | [x] => [what (x)]
-	   | l => ["  {\n",
-		   "    ", ml_val, " vs[] = {", String.concatWith ", " l, "};\n",
-		   "    ", ml_tuple (length l), " r = ", ml_tuple (length l), "(ctx, vs);\n",
-		   "    ", what ("r"), "\n",
-		   "  };"]
+      fun makeTuple (results:string list,what:string -> string):string list = (case results
+	     of [] => [what ("ML_UNIT")]
+	      | [x] => [what (x)]
+	      | l => ["  {\n",
+		      "    ", ml_val, " vs[] = {", String.concatWith ", " l, "};\n",
+		      "    ", ml_tuple (length l), " r = ", ml_tuple (length l), "(ctx, vs);\n",
+		      "    ", what ("r"), "\n",
+		      "  };"]
+	    (* end case *))
 
   (* 
    * Given two variables and a type, create the code that marshalls 
@@ -220,23 +220,27 @@ structure GenerateRuntime : sig end =
 	  (d,c)
 	end
       | unmarshallType (fr,to,I.TS_Sml _) = ([],concat [to," = ",fr, ";"])
-      | unmarshallType (fr,to,I.TS_Struct (fields)) = let
+      | unmarshallType (fr ,to, I.TS_Struct fields) = let
 	  val n = gensym ()
 	  val fields = map (fn (I.Fld {spec,name,...}) => (A.toString name,spec)) fields
-	  fun mk_unmarshall ((name,spec),i) = let
-		val (l, ty) = unmarshallType (concat["(", fr, ").", name], concat[n, "_", name],spec)
+	  fun mk_unmarshall ((name, spec), i) = let
+		val (l, ty) = unmarshallType (concat["(", fr, ").", name], concat[n, "_", name], spec)
 		in
 		  (l, ty ^ "\n")
 		end
 	  val unmarshalled = mapI mk_unmarshall fields
 	  fun proj1 l = map (fn (a,b) => a) l
 	  fun proj2 l = map (fn (a,b) => b) l
-	in
-	  (List.concat [List.concat (proj1 unmarshalled),
-			map (fn (name,spec) => ml_val^" "^n^"_"^name) fields],
-	   concat [concat (proj2 unmarshalled),
-		   concat (makeTuple (map (fn (name,_) => n^"_"^name) fields,fn (s) => concat [to," = ",s,";"]))])
-	end
+	  in (
+	    List.concat [
+		List.concat (proj1 unmarshalled),
+		map (fn (name, spec) => concat[ml_val, " ", n, "_", name]) fields
+	      ],
+	    concat [
+		concat (proj2 unmarshalled),
+		concat (makeTuple (map (fn (name, _) => n^"_"^name) fields, fn (s) => concat [to," = ",s,";"]))
+	      ]
+	  ) end
       | unmarshallType (fr,to,t) = fail ["GenerateRuntime.unmarshallType",
 					       "unhandled type spec ",IIL.spec_to_string (t)]
 
