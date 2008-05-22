@@ -1,27 +1,21 @@
 (* generate-header-fn.sml
  *
- * COPYRIGHT (c) 2001 Bell Labs, Lucent Technologies
- *)
-
-(* this module should be converted to a functor that factors out
- * the target differences:
- *
- *	".h" vs ".hxx" extension
- *	ml_val_t vs ML_Value
- *	ml-base.h vs. SMLNJ/base.h
- *	ml_state_t vs. ML_Context
+ * COPYRIGHT (c) 2008 The Fellowship of SML/NJ (http://www.smlnj.org)
+ * All rights reserved.
  *)
 
 functor GenerateHeaderFn (
-    val fileExt : string
-    val mlValueTy : string
-    val mlBasePath : string
-    val target : string
+
+    val fileExt : string	(* file extension *)
+    val mlValueTy : string	(* ML value type name *)
+    val mlBasePath : string	(* path of base include file *)
+    val target : string		(* target name; used by command-line *)
+
   ) : sig
 
     val generate : {
 	    srcDir: string, srcFile: string, dstDir: string option,
-	    spec: IIL.iil, cxx : bool
+	    spec: IIL.iil
 	  } -> unit
 
   end = struct
@@ -67,8 +61,7 @@ functor GenerateHeaderFn (
             | I.TS_Array {spec,size} => (
 		Error.bug ["Arrays unsupported still..."];
         	"void *"^n)
-            | I.TS_Sml (s) => (* "ml_val_t "^n *) (* FIXME *)
-		"ML_Value " ^ n
+            | I.TS_Sml (s) => mlValueTy ^ n
             | I.TS_Int => "int "^n
             | I.TS_Word => "unsigned int "^n
             | _ => (
@@ -86,9 +79,9 @@ functor GenerateHeaderFn (
 
     fun param2str (I.Prm{name, spec, ...}) = type2str (Atom.toString name, spec)
 
-    fun generate {srcDir, srcFile, dstDir, spec, cxx} = let
+    fun generate {srcDir, srcFile, dstDir, spec} = let
 	  val (I.IIL{decls, ...}) = spec
-	  val file = Util.replace_extension (srcFile, "", if cxx then "hxx" else "h")
+	  val file = Util.replace_extension (srcFile, "", fileExt)
 	  val hsym = headerSym srcFile
 	  fun gen outS = let
 		fun pr s = TextIO.output(outS, s)
@@ -133,11 +126,7 @@ functor GenerateHeaderFn (
 		  prf ("#ifndef %s\n", [F.STR hsym]);
 		  prf ("#define %s\n", [F.STR hsym]);
 		  pr "\n";
-(* FIXME: the following is target specific! *)
-(** OLD runtime
-		  pr ("#include \"ml-base.h\"\n");
-*)
-		  pr ("#include \"SMLNJ/base.h\"\n"); (* new runtime *)
+		  prf ("#include \"%s\"\n", [F.STR mlBasePath]);
 		  pr "\n";
 		  List.app genDcl decls;
 		  pr "\n";
@@ -148,14 +137,24 @@ functor GenerateHeaderFn (
 	    Util.withOutputFile (Util.FILE_C, file, gen)
 	  end
 
-    fun genCHeader {srcDir, srcFile, dstDir, spec} =
-	  generate {srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=false}
-
-    fun genCXXHeader {srcDir, srcFile, dstDir, spec} =
-	  generate {srcDir=srcDir, srcFile=srcFile, dstDir=dstDir, spec=spec, cxx=true}
-
-    val _ = (
-	  CmdOptions.register ("c-header", genCHeader);
-	  CmdOptions.register ("c++-header", genCXXHeader))
+    val _ = CmdOptions.register (target, generate);
 
   end
+
+structure GenerateCHeader = GenerateHeaderFn (
+
+    val fileExt = ".h"
+    val mlValueTy = "ml_val_t"
+    val mlBasePath = "ml-base.h"
+    val target = "c-header"
+
+  )
+
+structure GenerateCXXHeader = GenerateHeaderFn (
+
+    val fileExt = ".hxx"
+    val mlValueTy = "ML_Value"
+    val mlBasePath = "SMLNJ/base.h"
+    val target = "c++-header"
+
+  )
