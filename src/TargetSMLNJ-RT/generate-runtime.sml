@@ -93,7 +93,7 @@ structure GenerateRuntime : sig end =
 	| str_constant (p,I.E_String (x)) = x
 
       fun makeTuple (results:string list,what:string -> string):string list = (case results
-	     of [] => [what ("ML_UNIT")]
+	     of [] => [what ("ML_Value()")]
 	      | [x] => [what (x)]
 	      | l => ["  {\n",
 		      "    ", ml_val, " vs[] = {", String.concatWith ", " l, "};\n",
