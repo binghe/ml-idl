@@ -28,7 +28,7 @@ structure GenerateRuntime : sig end =
     val ml_op_stub = "ml_op_"
 
     fun ml_tuple n = "ML_Tuple<" ^ (Int.toString n) ^ ">"
-    fun downcast (ty, obj) = "(*(reinterpret_cast<(" ^ ty ^ ") *> (&(" ^ obj ^ ")))"
+    fun downcast (ty, obj) = "(*(reinterpret_cast<" ^ ty ^ " *> (&(" ^ obj ^ "))))"
     fun ml_sub (i,n,v) = downcast(ml_tuple n, v) ^ ".Get(ctx, " ^ (Int.toString (i+1)) ^ ")"
 
     local 
@@ -52,22 +52,22 @@ structure GenerateRuntime : sig end =
    * Given a name and a type, create a C declaration for that name (minus the ;)
    *)
     fun mk_declaration (n,I.TS_Id (s)) = concat [A.toString (s)," ",n]
-      | mk_declaration (n,I.TS_Real64) = concat ["double ",n]
-      | mk_declaration (n,I.TS_Real32) = concat ["double ",n]
-      | mk_declaration (n,I.TS_Int32) = concat ["Int32_t ",n]
-      | mk_declaration (n,I.TS_Int16) = concat ["Int32_t ",n]
-      | mk_declaration (n,I.TS_Int8) = concat ["Int32_t ",n]
-      | mk_declaration (n,I.TS_Word32) = concat ["Word_t ",n]
-      | mk_declaration (n,I.TS_Word16) = concat ["Word_t ",n]
-      | mk_declaration (n,I.TS_Word8) = concat ["Word_t ",n]
-      | mk_declaration (n,I.TS_Int) = concat ["int ",n]
-      | mk_declaration (n,I.TS_Word) = concat ["unsigned int ",n]
-      | mk_declaration (n,I.TS_Bool) = concat ["bool_t ",n]
-      | mk_declaration (n,I.TS_Char) = concat ["char ",n]
-      | mk_declaration (n,I.TS_String) = concat ["char *",n]
+      | mk_declaration (n,I.TS_Real64) = "double " ^ n
+      | mk_declaration (n,I.TS_Real32) = "double " ^ n
+      | mk_declaration (n,I.TS_Int32) = "int32_t " ^ n
+      | mk_declaration (n,I.TS_Int16) = "int32_t " ^ n
+      | mk_declaration (n,I.TS_Int8) = "int32_t " ^ n
+      | mk_declaration (n,I.TS_Word32) = "uint32_t " ^ n
+      | mk_declaration (n,I.TS_Word16) = "uint32_t " ^ n
+      | mk_declaration (n,I.TS_Word8) = "uint32_t " ^ n
+      | mk_declaration (n,I.TS_Int) = "int " ^ n
+      | mk_declaration (n,I.TS_Word) = "unsigned int " ^ n
+      | mk_declaration (n,I.TS_Bool) = "bool " ^ n
+      | mk_declaration (n,I.TS_Char) = "char " ^ n
+      | mk_declaration (n,I.TS_String) = "const char *" ^ n
       | mk_declaration (n,I.TS_Ref spec) = mk_declaration ("*"^n,spec)
       | mk_declaration (n,I.TS_Ptr spec) = mk_declaration ("*"^n,spec)
-      | mk_declaration (n,I.TS_Option (I.TS_String)) = concat ["char *",n]
+      | mk_declaration (n,I.TS_Option (I.TS_String)) = "const char *" ^ n
       | mk_declaration (n,I.TS_Option (I.TS_Ref spec)) = mk_declaration ("*"^n,spec)
 (*
       | mk_declaration (n,I.TS_Array {spec,size}) = 
@@ -224,7 +224,7 @@ structure GenerateRuntime : sig end =
 	  val n = gensym ()
 	  val fields = map (fn (I.Fld {spec,name,...}) => (A.toString name,spec)) fields
 	  fun mk_unmarshall ((name,spec),i) = let
-		val (l, ty) = unmarshallType ("("^fr^")."^name,n^"_"^name,spec)
+		val (l, ty) = unmarshallType (concat["(", fr, ").", name], concat[n, "_", name],spec)
 		in
 		  (l, ty ^ "\n")
 		end
