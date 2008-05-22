@@ -192,11 +192,11 @@ structure GenerateRuntime : sig end =
 					     "unhandled type spec ",IIL.spec_to_string (t)]
       
     fun unmarshallType (fr,to,I.TS_Id (s)) = unmarshallType (fr,to,findType (I.TS_Id (s)))
-      | unmarshallType (fr,to,I.TS_Real64) = ([], concat [to,"ML_Real64(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Real32) = ([], concat [to,"ML_Real64(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Int32)  = ([], concat [to,"ML_Int32(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Int16)  = ([], concat [to,"ML_Int32(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Int8)   = ([], concat [to,"ML_Int32(ctx,",fr,");"])
+      | unmarshallType (fr,to,I.TS_Real64) = ([], concat [to, " = ML_Real64(ctx,",fr,");"])
+      | unmarshallType (fr,to,I.TS_Real32) = ([], concat [to, " = ML_Real64(ctx,",fr,");"])
+      | unmarshallType (fr,to,I.TS_Int32)  = ([], concat [to, " = ML_Int32(ctx,",fr,");"])
+      | unmarshallType (fr,to,I.TS_Int16)  = ([], concat [to, " = ML_Int32(ctx,",fr,");"])
+      | unmarshallType (fr,to,I.TS_Int8)   = ([], concat [to, " = ML_Int32(ctx,",fr,");"])
 (*
       | unmarshallType (fr,to,I.TS_Word32) = ([], concat ["WORD_ALLOC (msp,",to,",",fr,");"])
       | unmarshallType (fr,to,I.TS_Word16) = ([], concat ["WORD_ALLOC (msp,",to,",",fr,");"])
@@ -219,7 +219,7 @@ structure GenerateRuntime : sig end =
 	in
 	  (d,c)
 	end
-      | unmarshallType (fr,to,I.TS_Sml _) = ([],concat [to," = ",fr, ";"])
+      | unmarshallType (fr, to, I.TS_Sml _) = ([], concat [to," = ",fr, ";"])
       | unmarshallType (fr ,to, I.TS_Struct fields) = let
 	  val n = gensym ()
 	  val fields = map (fn (I.Fld {spec,name,...}) => (A.toString name,spec)) fields
