@@ -8,6 +8,7 @@ functor GenerateHeaderFn (
 
     val fileExt : string	(* file extension *)
     val mlValueTy : string	(* ML value type name *)
+    val mlStateTy : string	(* ML execution context type name *)
     val mlBasePath : string	(* path of base include file *)
     val target : string		(* target name; used by command-line *)
 
@@ -61,7 +62,7 @@ functor GenerateHeaderFn (
             | I.TS_Array {spec,size} => (
 		Error.bug ["Arrays unsupported still..."];
         	"void *"^n)
-            | I.TS_Sml (s) => mlValueTy ^ n
+            | I.TS_Sml (s) => concat[mlValueTy, " ", n]
             | I.TS_Int => "int "^n
             | I.TS_Word => "unsigned int "^n
             | _ => (
@@ -103,7 +104,7 @@ functor GenerateHeaderFn (
                               in 
                                 if context
 				  then concat [
-				      "ml_state_t *msp",
+				      mlStateTy, " *msp",
 				      case params of [] => "" | _ => ",",
 				      p
 				    ]
@@ -143,8 +144,9 @@ functor GenerateHeaderFn (
 
 structure GenerateCHeader = GenerateHeaderFn (
 
-    val fileExt = ".h"
+    val fileExt = "h"
     val mlValueTy = "ml_val_t"
+    val mlStateTy = "ml_state_t"
     val mlBasePath = "ml-base.h"
     val target = "c-header"
 
@@ -152,8 +154,9 @@ structure GenerateCHeader = GenerateHeaderFn (
 
 structure GenerateCXXHeader = GenerateHeaderFn (
 
-    val fileExt = ".hxx"
+    val fileExt = "hxx"
     val mlValueTy = "ML_Value"
+    val mlStateTy = "ML_Context"
     val mlBasePath = "SMLNJ/base.h"
     val target = "c++-header"
 
