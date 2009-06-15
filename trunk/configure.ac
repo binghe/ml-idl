@@ -105,7 +105,7 @@ AC_SUBST(MOBY_DIR)
 
 dnl ******************** Supported targets ********************
 
-GENERATE_HEADER_STRUCT=GenerateHeader
+GENERATE_HEADER_STRUCT=GenerateCHeader
 
 # glue code for the classic-runtime system
 #
