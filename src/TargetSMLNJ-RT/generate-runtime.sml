@@ -1,5 +1,15 @@
 (* generate-runtime.sml
  *
+ * COPYRIGHT (c) 2009 The Fellowship of SML/NJ (http://www.smlnj.org)
+ * All rights reserved.
+ *
+ * This module generates the C++ code to package up a library for
+ * the C++ version of the runtime system.
+ *)
+
+
+(* generate-runtime.sml
+ *
  * CHANGES:
  * 6/18/01 - moved the typedef and cpp_quote stuff to the header
  *)
@@ -322,6 +332,8 @@ structure GenerateRuntime : sig end =
 	  val I.IIL{decls, clib_name=SOME lib, clib_version, clib_date, ...} = iil
 	  val proto_file = replace_extension (file, "-lib", "hxx")
 	  val clib_file = replace_extension (file, "-lib", "cxx")
+	  val version = Option.getOpt(clib_version, "?")
+	  val date = Option.getOpt(clib_date, Util.dateString())
 	  fun dump_lib_hxx os = let
 		val symb = toCPPSymbol proto_file
 		fun outputOper (I.Operation (name,oper)) = out os [
@@ -348,10 +360,17 @@ structure GenerateRuntime : sig end =
 		  out os [];
 		  out os ["static ML_CFunction fnTbl[] = {"];
 		  app outputOper decls;
+		  out os ["\tML_CFunction() /* end marker */"];
 		  out os ["    };"];
 		  out os [];
+		  out os ["static CLibInfo_t info = {"];
+		  out os ["\t\"", lib, "\""];
+		  out os ["\t\"", version, "\""];
+		  out os ["\t\"", date, "\""];
+		  out os ["    }"];
+		  out os [];
 		  out os ["ML_CLibraryDef ", lib, "Lib("];
-		  out os ["\t(CLibInfo_t *)0,"];
+		  out os ["\t&info,"];
 		  out os ["\t(ML_CLibInit_t)0,"];
 		  out os ["\tfnTbl);"]
 		end
