@@ -367,14 +367,14 @@ structure GenerateRuntime : sig end =
 		  out os ["\t\"", lib, "\""];
 		  out os ["\t\"", version, "\""];
 		  out os ["\t\"", date, "\""];
-		  out os ["    }"];
+		  out os ["    };"];
 		  out os [];
-		  out os ["ML_CLibraryDef ", lib, "Lib("];
+		  out os ["ML_StaticCLibrary ", lib, "Lib("];
 		  out os ["\t&info,"];
 		  out os ["\t(ML_CLibInit_t)0,"];
 		  out os ["\tfnTbl);"]
-		end
-	  in
+		  end
+		  in
 	    Verbose.message1 ["Generating glue files"];
 	    withOutputFile (FILE_CXX, proto_file, dump_lib_hxx);
 	    withOutputFile (FILE_CXX, clib_file, dump_lib_cxx)
