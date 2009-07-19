@@ -319,7 +319,7 @@ functor GenerateSMLFn (structure C: CONCRETE_SIG) = struct
     | typeSpec (I.TS_Option spec) = (typeSpec spec)^" option"
     | typeSpec (I.TS_String) = "String.string"
     | typeSpec (I.TS_Array {spec,...}) = (typeSpec spec)^" vector"
-    | typeSpec (I.TS_Sml t) = t
+    | typeSpec (I.TS_Sml (t, _)) = t
     | typeSpec (I.TS_Struct fields) = tuple (map (fn (I.Fld {name,spec}) => 
                                                     typeSpec (spec)) fields)
     | typeSpec (I.TS_StructTag a) = "unit" (* not satisfactory, but hey... *)

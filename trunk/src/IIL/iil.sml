@@ -65,7 +65,7 @@ structure IIL = struct
                 | TS_App of {oper: type_spec,
                              app: exp}
     (* for SML only, for now --- correct when parameterizing *)
-                | TS_Sml of string  (* sml_type *)
+                | TS_Sml of string * (string option) (* sml_type, cpp_type *)
                 | TS_Int
                 | TS_Word
     
@@ -151,7 +151,8 @@ structure IIL = struct
                                                           spec_to_string (spec)]
     | spec_to_string (TS_Case _) = "<case>"
     | spec_to_string (TS_App {oper,app}) = concat ["(",spec_to_string (oper),") ",exp_to_string (app)]
-    | spec_to_string (TS_Sml (str)) = concat ["sml <",str,">"]
+    | spec_to_string (TS_Sml (str, NONE)) = concat ["sml <",str,">"]
+    | spec_to_string (TS_Sml (str, SOME ty)) = concat ["sml <",str,", ",ty,">"]
     | spec_to_string (TS_Int) = "int"
     | spec_to_string (TS_Word) = "word"
 

@@ -62,7 +62,8 @@ functor GenerateHeaderFn (
             | I.TS_Array {spec,size} => (
 		Error.bug ["Arrays unsupported still..."];
         	"void *"^n)
-            | I.TS_Sml (s) => concat[mlValueTy, " ", n]
+            | I.TS_Sml (_, NONE) => concat[mlValueTy, " ", n]
+	    | I.TS_Sml (_, SOME cTy) => concat[cTy, " ", n]
             | I.TS_Int => "int "^n
             | I.TS_Word => "unsigned int "^n
             | _ => (
