@@ -86,7 +86,8 @@ structure GenerateRuntime : sig end =
 	      | _ => mk_declaration ("*"^n,spec))
 *)
       | mk_declaration (n,I.TS_StructTag (a)) = concat ["struct ",A.toString (a)," ",n]
-      | mk_declaration (n,I.TS_Sml _) = concat [ml_val," ",n]
+      | mk_declaration (n,I.TS_Sml (_, NONE)) = concat [ml_val," ",n]
+      | mk_declaration (n,I.TS_Sml (_, SOME ty)) = concat [ty," ",n]
       | mk_declaration (n,I.TS_App {oper,...}) = mk_declaration (n,oper)
       | mk_declaration (n,I.TS_Dep {spec,...}) = mk_declaration (n,spec)
       | mk_declaration (n,ts) = fail ["GenerateRuntime.mk_declaration",
@@ -180,7 +181,8 @@ structure GenerateRuntime : sig end =
 	  (d,concat [alloc,"for (int i=0; i < ",size_bnd,"; i++) ",c])
 	end
 *)
-      | marshallType (fr,to,I.TS_Sml _) p = ([],[concat [to," = ",fr, ";"]])
+      | marshallType (fr,to,I.TS_Sml (_, NONE)) p = ([],[concat [to," = ",fr, ";"]])
+      | marshallType (fr,to,I.TS_Sml (_, SOME ty)) p = ([],[concat [ty," ",to," = ",downcast(ty, fr),";"]])
       | marshallType (fr,to,I.TS_App {oper=I.TS_Dep {id,id_spec,spec},app}) p = let
 	  val app' = case (app) 
 		       of I.E_Id (var) => I.E_String (ml_op_stub^(A.toString (var)))
@@ -286,14 +288,18 @@ structure GenerateRuntime : sig end =
 	| stripRef _ = Error.error ["Trying to ref-strip a non-ref output parameter"]
       fun mapStrippedOutDecl (I.Prm {name,spec,...}) = 
 	["  ",mk_declaration ("out_"^ml_op_stub^(A.toString name),stripRef (spec)),";"]
+      fun isSmlVal (I.TS_Id(s)) = isSmlVal(findType(I.TS_Id(s)))
+	| isSmlVal (I.TS_Sml(_, SOME t)) = true
+	| isSmlVal _ = false
+      fun stripSmlVal l = List.filter (fn (I.Prm {spec, ...}) =>
+						  not (isSmlVal spec)) l
     in
       out os [ml_val," ", ml_fun_stub,n," (",ml_context," *ctx,", ml_val," v) {"];
       out os ["  ",ml_val," ml_result;"];
       out os ["  ",ml_val," ml_argresult;"];
       app (out os) (map (fn (n) => ["  ",ml_val," ",ml_arg_stub,n,";"]) names);
-      on_spec ((), fn () => out os ["  ",mk_declaration ("ml_opresult",spec),";"]);
-      app (out os) (map mapDecl in_params);
-      app (out os) (map mapDecl out_params);
+      app (out os) (map mapDecl (stripSmlVal in_params));
+      app (out os) (map mapDecl (stripSmlVal out_params));
       (* hack to avoid allocating memory on the heap
        * one way to clean it up is to *not* make [out] parameters
        * automatic refs in the IIL, and deal with out parameters specially
@@ -317,7 +323,7 @@ structure GenerateRuntime : sig end =
 						     F.STR (x),
 						     F.INT (i+1)]]) l);
       app (out os) (map (fn c => ["  ",c]) (List.concat (#2 (ListPair.unzip marshalled))));
-      out os ["  ",on_spec ("",fn () => "ml_opresult = "),n," (", 
+      out os ["  ",on_spec ("",fn () => mk_declaration ("ml_opresult = ", spec)),n," (", 
 	      (* pass context if need be *)
 	      if (context) then concat ["ctx",
 					case (names) of [] => "" | _ => ","]

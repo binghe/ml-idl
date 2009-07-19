@@ -56,6 +56,7 @@ structure Keywords = struct
                            ("clib_date", Tokens.KW_clib_date),
                            ("clib_version", Tokens.KW_clib_version),
                            ("sml_type", Tokens.KW_sml_type),
+			   ("cpp_type", Tokens.KW_cpp_type),
                            ("sml_value", Tokens.KW_sml_value),
                            ("sml_context", Tokens.KW_sml_context),
                            ("exclude", Tokens.KW_exclude),

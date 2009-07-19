@@ -14,6 +14,7 @@ val KW_abstract:  'a * 'a -> (svalue,'a) token
 val KW_exclude:  'a * 'a -> (svalue,'a) token
 val KW_sml_context:  'a * 'a -> (svalue,'a) token
 val KW_sml_value:  'a * 'a -> (svalue,'a) token
+val KW_cpp_type:  'a * 'a -> (svalue,'a) token
 val KW_sml_type:  'a * 'a -> (svalue,'a) token
 val KW_clib_version:  'a * 'a -> (svalue,'a) token
 val KW_clib_date:  'a * 'a -> (svalue,'a) token

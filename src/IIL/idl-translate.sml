@@ -47,6 +47,7 @@ structure IdlTranslate = struct
                      | A_SwitchIs of D.attr_var
                      | A_String
                      | A_SmlType of string
+		     | A_CppType of string
                      | A_SizeIs of (D.attr_var) list
                      | A_Ignore
                      | A_Ref
@@ -84,6 +85,7 @@ structure IdlTranslate = struct
     | flatten_type_attr _ = NONE
   and flatten_usage_attr (D.A_String) = SOME (A_String)
     | flatten_usage_attr (D.A_SmlType s) = SOME (A_SmlType s)
+    | flatten_usage_attr (D.A_CppType s) = SOME (A_CppType s)
     | flatten_usage_attr _ = NONE
   and flatten_field_attr (D.A_SizeIs l) = SOME (A_SizeIs l)
     | flatten_field_attr (D.A_FieldUsage ua) = flatten_usage_attr (ua)
@@ -182,6 +184,10 @@ structure IdlTranslate = struct
   fun extract_sml_type [] = NONE
     | extract_sml_type ((A_SmlType (t))::xs) = SOME (t)
     | extract_sml_type (_::xs) = extract_sml_type (xs)
+
+  fun extract_cpp_type [] = NONE
+    | extract_cpp_type ((A_CppType (t))::xs) = SOME (t)
+    | extract_cpp_type (_::xs) = extract_cpp_type (xs)
 
   fun extract_type_attrs l = mapP get_type_attr l    
 
@@ -391,7 +397,8 @@ structure IdlTranslate = struct
     val ptr = extract_single_ptr_attr (attrs)
     val typ = [] 
     val sml_type = extract_sml_type (attrs)
-    val spec' = convert_type_spec (sml_type,typ,spec)
+    val cpp_type = extract_cpp_type (attrs)
+    val spec' = convert_type_spec (sml_type,cpp_type,typ,spec)
     val list = explode_declarator (ptr,
                                    has_string_attr (attrs),
                                    extract_size_is (attrs) ,spec',decls)
@@ -400,12 +407,14 @@ structure IdlTranslate = struct
                                    name=name}) list
   end
 
-  and convert_sml_value (NONE) = Error.error ["Need sml_type attribute for every sml_value type"]
-    | convert_sml_value (SOME t) = I.TS_Sml (Util.stripString (t))
+  and convert_sml_value (NONE,_) = Error.error ["Need sml_type attribute for every sml_value type"]
+    | convert_sml_value (SOME t,NONE) = I.TS_Sml (Util.stripString (t), NONE)
+    | convert_sml_value (SOME t, SOME cpp) = I.TS_Sml (Util.stripString(t), 
+						       SOME (Util.stripString(cpp)))
 
-  and convert_type_spec (sml_type,_,D.TS_Simple (D.SmlValue)) = convert_sml_value (sml_type)
-    | convert_type_spec (_,_,D.TS_Simple (spec)) = convert_simple_type_spec (spec)
-    | convert_type_spec (_,ts,D.TS_Constructed (spec)) = convert_constructed_type_spec (ts,spec)
+  and convert_type_spec (sml_type,cpp_type,_,D.TS_Simple (D.SmlValue)) = convert_sml_value (sml_type,cpp_type)
+    | convert_type_spec (_,_,_,D.TS_Simple (spec)) = convert_simple_type_spec (spec)
+    | convert_type_spec (_,_,ts,D.TS_Constructed (spec)) = convert_constructed_type_spec (ts,spec)
 
   and convert_integer_type (D.PrimitiveInteger (i)) = convert_prim_integer (i)
 (*    | convert_integer_type (D.HInt) =  I.TS_Int64
@@ -472,13 +481,13 @@ structure IdlTranslate = struct
     val cases = foldr fold_cases [] cases
     (* get switchtype attribute if it exists *)
     (* SwitchType is the only type attribute *)
-    val switchtype = foldr (fn (A_SwitchType (ty),_) => SOME(convert_type_spec (NONE,[],lift (ty)))
+    val switchtype = foldr (fn (A_SwitchType (ty),_) => SOME(convert_type_spec (NONE,NONE,[],lift (ty)))
                              | (_,_) => fail ["IdlTranslate.convert_union","unmatched case"]) NONE ts 
     fun convert_case (v,NONE) = (convert_constant v,[])
       | convert_case (v,SOME f) = (convert_constant v, (convert_field (f)))
     fun get_switch_type (NONE,NONE) = Error.error ["No switch specified for union type"]
       | get_switch_type (SOME (ts),NONE) = ts
-      | get_switch_type (NONE, SOME ts) = convert_type_spec (NONE,[],lift (ts))
+      | get_switch_type (NONE, SOME ts) = convert_type_spec (NONE,NONE,[],lift (ts))
       | get_switch_type (SOME _, SOME _) = Error.error ["Multiple switches in union"]
     fun get_switch_name (NONE) = NONE
       | get_switch_name (SOME (_,st)) = SOME (st)
@@ -502,7 +511,8 @@ structure IdlTranslate = struct
     val dir = convert_dir_attr (attrs)
     val typ = [] (* extract_type_attrs (mapP attrFieldUnion flds) *)
     val sml_type = extract_sml_type (attrs)
-    val spec' = convert_type_spec (sml_type,typ,spec)
+    val cpp_type = extract_cpp_type (attrs)
+    val spec' = convert_type_spec (sml_type,cpp_type,typ,spec)
     val list = explode_declarator (ptr,
                                    has_string_attr (attrs),
                                    extract_size_is (attrs),spec',[decl])
@@ -532,7 +542,8 @@ structure IdlTranslate = struct
     (* next, convert the specs *)
     val typ = extract_type_attrs (attrs)
     val sml_type = extract_sml_type (attrs)
-    val spec' = convert_type_spec (sml_type,typ,spec)
+    val cpp_type = extract_cpp_type (attrs)
+    val spec' = convert_type_spec (sml_type,cpp_type,typ,spec)
     (* explode the declarators list *)
     val list = explode_declarator (ptr,
                                    has_string_attr (attrs),
@@ -552,7 +563,7 @@ structure IdlTranslate = struct
             pre = has_pre_attr (f),
             post = has_post_attr (f),
             call = has_call_attr (f),
-            spec = convert_type_spec (NONE,[],D.TS_Simple (spec)),
+            spec = convert_type_spec (NONE,NONE,[],D.TS_Simple (spec)),
             params = map convert_param_declarator (convert_params params)}
   end
 
@@ -562,8 +573,9 @@ structure IdlTranslate = struct
         val ptr = extract_single_ptr_attr (attrs)
         val typ = extract_type_attrs (attrs)
         val sml_type = extract_sml_type (attrs)
-        val spec' = (abstract_flag := false;
-                     convert_type_spec (sml_type,typ,spec))
+        val cpp_type = extract_cpp_type (attrs)
+	val spec' = (abstract_flag := false;
+                     convert_type_spec (sml_type,cpp_type,typ,spec))
         val abstract = (has_abstract_attr (attrs)) orelse (!abstract_flag)
         val exclude = has_exclude_attr (attrs)
       in

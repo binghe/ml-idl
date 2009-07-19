@@ -77,6 +77,7 @@ structure P = IdlParseTree
  | KW_clib_date
  | KW_clib_version
  | KW_sml_type
+ | KW_cpp_type
  | KW_sml_value
  | KW_sml_context
  | KW_exclude
@@ -363,6 +364,7 @@ type_attribute :
 usage_attribute : 
    KW_string (P.A_String)
  | KW_sml_type LPAREN STRING RPAREN (P.A_SmlType (STRING))
+ | KW_cpp_type LPAREN STRING RPAREN (P.A_CppType (STRING))
 
 field_attribute : 
    KW_size_is LPAREN Plus_List_23 RPAREN (P.A_SizeIs (Plus_List_23))

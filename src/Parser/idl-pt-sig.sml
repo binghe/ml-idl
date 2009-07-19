@@ -131,6 +131,7 @@ signature Idl_PARSE_TREE_SIG = sig
  and usage_attribute = A_String
  | A_ContextHandle
  | A_SmlType of string
+ | A_CppType of string
  and field_attribute = A_FirstIs of (attr_var) list
  | A_LastIs of (attr_var) list
  | A_LengthIs of (attr_var) list
