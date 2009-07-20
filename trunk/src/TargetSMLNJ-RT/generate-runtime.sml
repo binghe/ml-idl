@@ -370,8 +370,8 @@ structure GenerateRuntime : sig end =
 		  out os ["    };"];
 		  out os [];
 		  out os ["static CLibInfo_t info = {"];
-		  out os ["\t\"", lib, "\""];
-		  out os ["\t\"", version, "\""];
+		  out os ["\t\"", lib, "\","];
+		  out os ["\t\"", version, "\","];
 		  out os ["\t\"", date, "\""];
 		  out os ["    };"];
 		  out os [];
