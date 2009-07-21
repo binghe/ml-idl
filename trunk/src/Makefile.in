@@ -34,6 +34,8 @@ $(HEAP_IMAGE):
 clean:
 	rm -f $(HEAP_IMAGE)
 	find . \( -name CM -exec rm -rf {} \; -prune -print \)
+	rm -f parser/idl.grm.desc parser/idl.grm.sig parser/idl.grm.sml
+	rm -f parser/idl.lex.sml
 
 distclean:	clean
 	rm -f Makefile sources.cm
