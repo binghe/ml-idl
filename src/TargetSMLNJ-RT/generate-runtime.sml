@@ -103,7 +103,8 @@ structure GenerateRuntime : sig end =
 	| str_constant (p,I.E_Id (x)) = str_constant (p,p_lookup (p,x))  (* assume alpha-renaming all the way through *)
 	| str_constant (p,I.E_String (x)) = x
 
-      fun makeTuple (results:string list,what:string -> string):string list = (case results
+      fun makeTuple (results:string list, what:string -> string):string list = (
+	    case results
 	     of [] => [what ("ML_Value()")]
 	      | [x] => [what (x)]
 	      | l => ["  {\n",
@@ -118,7 +119,7 @@ structure GenerateRuntime : sig end =
    * The result is a pair (dl,code) with 'dl' a list of declarations used as temporary variables
    * and code a list of the actual code to perform the marshalling.
    *)
-    fun marshallType (fr,to,I.TS_Id (s)) p = marshallType (fr,to,findType (I.TS_Id (s))) p
+    fun marshallType (fr,to,I.TS_Id s) p = marshallType (fr, to, findType (I.TS_Id s)) p
       | marshallType (fr,to,I.TS_Real64) p = ([],[concat [to," = ",downcast("ML_Real64",fr),".Val();"]])
       | marshallType (fr,to,I.TS_Real32) p = ([],[concat [to," = ",downcast("ML_Real64",fr),".Val();"]])
       | marshallType (fr,to,I.TS_Int32)  p = ([],[concat [to," = ",downcast("ML_Int32",fr),".Val();"]])
@@ -313,15 +314,19 @@ structure GenerateRuntime : sig end =
 								   F.STR (n),
 								   F.STR (ml_op_stub),
 								   F.STR (n)]]) out_names);
-      case (in_names)
-	of [] => ()
-	 | [x] => out os [F.format "  %s%s = v;" [F.STR (ml_arg_stub),F.STR (x)]]
-	 | l => (out os ["  ", ml_tuple (length l), "ml_arg_tuple = ", 
-			 downcast(ml_tuple (length l), "v"), ";"];
-		 appI (fn (x,i) => out os [F.format "  %s%s = ml_arg_tuple.Get(ctx, %d);" 
-						    [F.STR (ml_arg_stub),
-						     F.STR (x),
-						     F.INT (i+1)]]) l);
+      case in_names
+       of [] => ()
+	| [x] => out os [F.format "  %s%s = v;" [F.STR (ml_arg_stub),F.STR (x)]]
+	| l => (
+	      out os [
+		  "  ", ml_tuple (length l), "ml_arg_tuple = ", 
+		  downcast(ml_tuple (length l), "v"), ";"
+		];
+	      appI (fn (x,i) => out os [
+		  F.format "  %s%s = ml_arg_tuple.Get(ctx, %d);" 
+		    [F.STR ml_arg_stub, F.STR x, F.INT(i+1)
+		]]) l)
+      (* end case *);
       app (out os) (map (fn c => ["  ",c]) (List.concat (#2 (ListPair.unzip marshalled))));
       out os ["  ",on_spec ("",fn () => mk_declaration ("ml_opresult = ", spec)),n," (", 
 	      (* pass context if need be *)
