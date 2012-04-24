@@ -10,6 +10,8 @@ INSTALL_WRAPPER =	@INSTALL_SMLNJ_WRAPPER@
 SML =			@SMLNJ_CMD@
 ML_BUILD =		@ML_BUILD@
 ML_BUILD_FLAGS =	@ML_BUILD_FLAGS@
+ML_MAKEDEPEND =		@ML_MAKEDEPEND@
+ML_MAKEDEPEND_FLAGS =
 
 PROGRAM =		ml-idl
 HEAP_SUFFIX =		@SMLNJ_HEAP_SUFFIX@
@@ -19,17 +21,32 @@ BINDIR =		@LOCAL_BINDIR@
 PREFIX =		@prefix@
 INSTALL_BINDIR =	$(PREFIX)/bin
 
-build:		local-install
+.PHONY:		build
+build:		$(HEAP_IMAGE)
 
+.PHONY:		local-install
 local-install:	$(HEAP_IMAGE)
 	$(INSTALL_WRAPPER) $(PROGRAM) $(BINDIR)
 	rm -f $(HEAP_IMAGE)
 
+.PHONY:		install
 install:	$(HEAP_IMAGE)
 	$(INSTALL_WRAPPER) $(PROGRAM) $(INSTALL_BINDIR)
 
-$(HEAP_IMAGE):
+$(HEAP_IMAGE):	.depend
 	$(ML_BUILD) $(ML_BUILD_FLAGS) sources.cm Main.main ml-idl
+
+.depend:	sources.cm Main/sources.cm
+	touch .depend
+	$(ML_MAKEDEPEND) $(ML_MAKEDEPEND_FLAGS) -n -f .depend sources.cm $(HEAP_IMAGE)
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),devclean)
+sinclude .depend
+endif
+endif
+endif
 
 clean:
 	rm -f $(HEAP_IMAGE)
