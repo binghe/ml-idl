@@ -1,11 +1,10 @@
 (* iil.sml
  *
- * COPYRIGHT (c) 1998 Bell Labs, Lucent Technologies.
+ * COPYRIGHT (c) 2012 The Fellowship of SML/NJ (http://www.smlnj.org)
+ * All rights reserved.
  *
  * IDL internal language.
- *
  *)
-
 
 structure IIL = struct
 
@@ -65,7 +64,7 @@ structure IIL = struct
                 | TS_App of {oper: type_spec,
                              app: exp}
     (* for SML only, for now --- correct when parameterizing *)
-                | TS_Sml of string * (string option) (* sml_type, cpp_type *)
+                | TS_Sml of string * string option (* sml_type, cpp_type *)
                 | TS_Int
                 | TS_Word
     
@@ -94,13 +93,15 @@ structure IIL = struct
                 | Operation of A.atom * oper
                 | CppQuote of string
 
-  datatype iil = IIL of {symtable: typedef S.map,
-                         struct_name : string option,
-                         sig_name : string option,
-                         clib_name : string option,
-                         clib_version : string option,
-                         clib_date : string option,
-                         decls : decl list}
+  datatype iil = IIL of {
+	symtable: typedef S.map,
+	struct_name : string option,
+	sig_name : string option,
+	clib_name : string option,
+	clib_version : string option,
+	clib_date : string option,
+	decls : decl list
+      }
 
   fun has_In In = true
     | has_In InOut = true 
