@@ -1,6 +1,6 @@
 (* generate-runtime.sml
  *
- * COPYRIGHT (c) 2009 The Fellowship of SML/NJ (http://www.smlnj.org)
+ * COPYRIGHT (c) 2012 The Fellowship of SML/NJ (http://www.smlnj.org)
  * All rights reserved.
  *
  * This module generates the C++ code to package up a library for
@@ -28,329 +28,424 @@ structure GenerateRuntime : sig end =
 
     fun fail (x::xs) = (Error.bug (Error.funct (x,xs)); Error.quit ())
 
+  (* representation of C++ types *)
+    datatype cxx_ty
+      = T_Named of string
+      | T_Ptr of cxx_ty			(* ty * *)
+      | T_Ref of cxx_ty			(* ty & *)
+      | T_Array of cxx_ty * int option
+      | T_App of string * cxx_ty list	(* type application *)
+
+    fun cxxTyToString ty = (case ty
+	   of T_Named ty => ty
+	    | T_Ptr ty => cxxTyToString ty ^ " *"
+	    | T_Ref ty => cxxTyToString ty ^ " &"
+	    | T_Array(ty, NONE) => cxxTyToString ty ^ "[]"
+	    | T_Array(ty, SOME d) => concat[cxxTyToString ty, "[", Int.toString d, "]"]
+	    | T_App(ty, []) => ty ^ "<>"
+	    | T_App(ty, args) => let
+		fun f [ty] = let
+		      val ty = cxxTyToString ty
+		      in
+			if (String.sub(ty, String.size ty - 1) = #">")
+			  then [ty, " >"]
+			  else [ty, ">"]
+		      end
+		  | f (ty::tys) = cxxTyToString ty :: "," :: f tys
+		in
+		  concat(ty :: "<" :: f args)
+		end
+	  (* end case *))
+
+    fun varDecl (ty, n) = (case ty
+	   of T_Named ty => concat[ty, " ", n]
+	    | T_Ptr ty => varDecl (ty, "*"^n)
+	    | T_Ref ty => varDecl (ty, "&"^n)
+	    | T_Array(ty, NONE) => varDecl (ty, n^"[]")
+	    | T_Array(ty, SOME d) => varDecl (ty, concat[n, "[", Int.toString d, "]"])
+	    | T_App _ => concat[cxxTyToString ty, " ", n]
+	  (* end case *))
+
     val mapP = List.mapPartial
-    
+
+  (* the length of the longest specialized ML_TupleN type (see ml-values.hxx in runtime system) *)
+    val maxFixedTuple = 5
+
   (* for customization *)
     val ml_val = "ML_Value"
     val ml_context = "ML_Context"
     val ml_fun_stub = "ml_stub_"
-    val ml_arg_stub = "ml_arg_"
-    val ml_op_stub = "ml_op_"
+    val ml_out_stub = "ml_out_"
+    val ml_in_stub = "ml_in_"
 
     fun ml_tuple n = "ML_Tuple<" ^ (Int.toString n) ^ ">"
-(* FIXME: we should use conversion constructors
-    fun downcast (ty, obj) = concat [ty, "(", obj, ")"]
-*)
-    fun downcast (ty, obj) = concat [
-	    "(*(reinterpret_cast<", ty, " *> (&(", obj, "))))"
-	  ]
-    fun ml_sub (i, n, v) = concat [
-	    downcast(ml_tuple n, v), ".Get(ctx, ", (Int.toString (i+1)), ")"
-	  ]
 
     local 
       val i = ref 0
     in
-    fun gensym () = "ml_tmp_"^(Int.toString (!i)) before i := !i + 1
+    fun gensym () = ("ml_tmp_" ^ Int.toString (!i)) before i := !i + 1
     end
     
     val glob_symtable = ref (NONE : I.typedef S.map option)
 
-    fun findType (I.TS_Id s) = (case (!glob_symtable)
+    fun findType s = (case (!glob_symtable)
 	   of NONE => fail ["GenerateRuntime.findType uninitialized global symbol table"]
 	    | SOME st => (case S.find (st, s)
-		 of SOME(I.TypeDef{spec,...}) => findType spec
+		 of SOME(I.TypeDef{spec = I.TS_Id s, ...}) => findType s
+		  | SOME(I.TypeDef{spec, ...}) => spec
 		  | NONE => Error.error ["is not a type"]
 		(* end case *))
 	  (* end case *))
-      | findType (t) = t
 
-  (* 
-   * Given a name and a type, create a C declaration for that name (minus the ;)
+  (* map an IDL type to the C++ encoding of its ML type *)
+    fun idlToMLType ty = (case ty
+	   of I.TS_Id s => idlToMLType(findType s)
+	    | I.TS_Real64 => T_Named "ML_Real64"
+	    | I.TS_Real32 => T_Named "ML_Real64"
+	    | I.TS_Int32 => T_Named "ML_Int32"
+	    | I.TS_Int16 => T_Named "ML_Int"
+	    | I.TS_Int8 => T_Named "ML_Int"
+	    | I.TS_Int => T_Named "ML_Int"
+	    | I.TS_Word32 => T_Named "ML_Word32"
+	    | I.TS_Word16 => T_Named "ML_Word"
+	    | I.TS_Word8 => T_Named "ML_Word"
+	    | I.TS_Word => T_Named "ML_Word"
+	    | I.TS_Bool => T_Named "ML_Int"
+	    | I.TS_Char => T_Named "ML_Int"
+	    | I.TS_String => T_Named "ML_String"
+	    | I.TS_Option(I.TS_Ref spec) => T_App("ML_Option", [idlToMLType spec])
+	    | I.TS_Ref spec => idlToMLType spec
+	    | I.TS_Sml(_, NONE) => T_Named "ML_Value"
+	    | I.TS_Sml(_, SOME ty) => T_Named ty
+(*
+	    | I.TS_App{oper=I.TS_Dep{id,id_spec,spec},app} => ??
+*)
+	    | I.TS_Struct fields => (* map to tuple type *)
+		idlToTupleTy (List.map (fn (I.Fld{spec, ...}) => spec) fields)
+	    | t => fail [
+		  "idlToMLType.idlToMLType", "unhandled type spec ", IIL.spec_to_string t
+		]
+	  (* end case *))
+
+    and idlToTupleTy [] = T_Named "ML_Value"	(* really "unit" *)
+      | idlToTupleTy [ty] = idlToMLType ty
+      | idlToTupleTy specs = let
+	  val n = List.length specs
+	  in
+	    if (n > maxFixedTuple)
+	      then T_Named (concat["ML_Tuple<", Int.toString n, ">"])
+	      else T_App("ML_Tuple" ^ Int.toString n, List.map idlToMLType specs)
+	  end
+
+  (* convert an IDL type to its C/C++ representation *)
+    fun idlToCXXType ty = (case ty
+	   of I.TS_Id s => T_Named(Atom.toString s)
+	    | I.TS_Real64 => T_Named "double "
+	    | I.TS_Real32 => T_Named "float "
+	    | I.TS_Int32 => T_Named "int32_t "
+	    | I.TS_Int16 => T_Named "int32_t "
+	    | I.TS_Int8 => T_Named "int32_t "
+	    | I.TS_Word32 => T_Named "uint32_t "
+	    | I.TS_Word16 => T_Named "uint32_t "
+	    | I.TS_Word8 => T_Named "uint32_t "
+	    | I.TS_Int => T_Named "int "
+	    | I.TS_Word => T_Named "unsigned int "
+	    | I.TS_Bool => T_Named "bool "
+	    | I.TS_Char => T_Named "char "
+	    | I.TS_String => T_Ptr(T_Named "const char")
+	    | I.TS_Ref spec => T_Ptr(idlToCXXType spec)
+	    | I.TS_Ptr spec => T_Ptr(idlToCXXType spec)
+	    | I.TS_Option I.TS_String => T_Ptr(T_Named "const char")
+	    | I.TS_Option(I.TS_Ref spec) => T_Ptr(idlToCXXType spec)
+	    | I.TS_StructTag a => T_Named(Atom.toString a)
+	    | I.TS_Sml(_, NONE) => T_Named "ML_Value"
+	    | I.TS_Sml(_, SOME ty) => T_Named ty
+	    | I.TS_App{oper, ...} => idlToCXXType oper
+	    | I.TS_Dep{spec, ...} => idlToCXXType spec
+	    | ts => fail [
+		 "GenerateRuntime.idlToCXXType", "unhandled type spec ", IIL.spec_to_string ts
+	       ]
+	  (* end case *))
+
+  (* marshall data from ML representation to native C++ representation.  The source of the
+   * data is assumed to be a C++ object whose type is defined by idlToTupleTy.  The variable
+   * ml_param is the name of the source object.  The destination is specified as a list of
+   * (idl-type, name) pairs.
    *)
-    fun mk_declaration (n,I.TS_Id s) = concat [A.toString s, " ", n]
-      | mk_declaration (n,I.TS_Real64) = "double " ^ n
-      | mk_declaration (n,I.TS_Real32) = "double " ^ n
-      | mk_declaration (n,I.TS_Int32) = "int32_t " ^ n
-      | mk_declaration (n,I.TS_Int16) = "int32_t " ^ n
-      | mk_declaration (n,I.TS_Int8) = "int32_t " ^ n
-      | mk_declaration (n,I.TS_Word32) = "uint32_t " ^ n
-      | mk_declaration (n,I.TS_Word16) = "uint32_t " ^ n
-      | mk_declaration (n,I.TS_Word8) = "uint32_t " ^ n
-      | mk_declaration (n,I.TS_Int) = "int " ^ n
-      | mk_declaration (n,I.TS_Word) = "unsigned int " ^ n
-      | mk_declaration (n,I.TS_Bool) = "bool " ^ n
-      | mk_declaration (n,I.TS_Char) = "char " ^ n
-      | mk_declaration (n,I.TS_String) = "const char *" ^ n
-      | mk_declaration (n,I.TS_Ref spec) = mk_declaration ("*"^n, spec)
-      | mk_declaration (n,I.TS_Ptr spec) = mk_declaration ("*"^n, spec)
-      | mk_declaration (n,I.TS_Option I.TS_String) = "const char *" ^ n
-      | mk_declaration (n,I.TS_Option(I.TS_Ref spec)) = mk_declaration ("*"^n, spec)
-(*
-      | mk_declaration (n,I.TS_Array {spec,size}) = 
-	  (case (size) 
-	     of I.E_Int (i) => mk_declaration (concat [n,"[",Int32.toString (i),"]"],spec)
-	      | _ => mk_declaration ("*"^n,spec))
-*)
-      | mk_declaration (n,I.TS_StructTag (a)) = concat ["struct ",A.toString (a)," ",n]
-      | mk_declaration (n,I.TS_Sml (_, NONE)) = concat [ml_val," ",n]
-      | mk_declaration (n,I.TS_Sml (_, SOME ty)) = concat [ty," ",n]
-      | mk_declaration (n,I.TS_App {oper,...}) = mk_declaration (n,oper)
-      | mk_declaration (n,I.TS_Dep {spec,...}) = mk_declaration (n,spec)
-      | mk_declaration (n,ts) = fail ["GenerateRuntime.mk_declaration",
-                                          "unhandled type spec ",IIL.spec_to_string (ts)]
-
-      type rho = (A.atom * I.exp) list
-      val p_empty = [] : rho
-      fun p_lookup ([],a) = Error.error ["Unbound variable ",A.toString a]
-	| p_lookup (((x,y)::xs),a) = if (A.sameAtom (x,a)) then y else p_lookup (xs,a)
-      fun p_add (p,(x,y)) = (x,y)::p
-
-      fun str_constant (p,I.E_Int (i)) = Int32.toString i
-	| str_constant (p,I.E_Id (x)) = str_constant (p,p_lookup (p,x))  (* assume alpha-renaming all the way through *)
-	| str_constant (p,I.E_String (x)) = x
-
-      fun makeTuple (results:string list, what:string -> string):string list = (
-	    case results
-	     of [] => [what "ML_Value()"]
-	      | [x] => [what x]
-	      | l => ["  {\n",
-		      "    ", ml_val, " vs[] = {", String.concatWith ", " l, "};\n",
-		      "    ", ml_tuple (length l), " r = ", ml_tuple (length l), "(ctx, vs);\n",
-		      "    ", what ("r"), "\n",
-		      "  };"]
-	    (* end case *))
-
-  (* 
-   * Given two variables and a type, create the code that marshalls 
-   * The result is a pair (dl,code) with 'dl' a list of declarations used as temporary variables
-   * and code a list of the actual code to perform the marshalling.
-   *)
-    fun marshallType (fr,to,I.TS_Id s) p = marshallType (fr, to, findType (I.TS_Id s)) p
-      | marshallType (fr,to,I.TS_Real64) p = ([],[concat [to," = ",downcast("ML_Real64",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Real32) p = ([],[concat [to," = ",downcast("ML_Real64",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Int32)  p = ([],[concat [to," = ",downcast("ML_Int32",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Int16)  p = ([],[concat [to," = ",downcast("ML_Int32",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Int8)   p = ([],[concat [to," = ",downcast("ML_Int32",fr),".Val();"]])
-(*
-      | marshallType (fr,to,I.TS_Word32) p = ([],[concat [to," = WORD_MLtoC (",fr,");"]])
-      | marshallType (fr,to,I.TS_Word16) p = ([],[concat [to," = WORD_MLtoC (",fr,");"]])
-      | marshallType (fr,to,I.TS_Word8)  p = ([],[concat [to," = WORD_MLtoC (",fr,");"]])
-*)
-      | marshallType (fr,to,I.TS_Int)    p = ([],[concat [to," = ",downcast("ML_Int",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Word)   p = ([],[concat [to," = ",downcast("ML_Int",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Bool)   p = ([],[concat [to," = ",downcast("ML_Int",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_Char)   p = ([],[concat [to," = (char) ",downcast("ML_Int",fr),".Val();"]])
-      | marshallType (fr,to,I.TS_String) p = ([],[concat [to," = ",downcast("ML_String",fr),".UnsafeCString();"]])
-(*
-      | marshallType (fr,to,I.TS_Option (I.TS_String)) p = let
-	  val n = gensym ()
-	  val (d,c) = marshallType (n,to,I.TS_String) p
-	in
-	  (d,concat ["if (",fr," == OPTION_NONE) { ",to," = NULL; } else { ",ml_val," ",n,"; ",n," = OPTION_get (",fr,"); ", c," };"])
-	end
-*)
-(*
-      | marshallType (fr,to,I.TS_Ptr spec) p = (*([],concat [to," = PTR_MLtoC (void,",fr,");"]) *)
-	  ([],concat [to," = PTR_MLtoC (",I.spec_to_string (spec),",",fr,");"])
-*)
-      | marshallType (fr,to,I.TS_Option (I.TS_Ref spec)) p = let
-	  val n = gensym ()
-	  val n_opt = gensym ()
-	  val (d,c) = marshallType (n_opt,n,spec) p
-	  val d' = mk_declaration (n,spec)
-	  in 
-	    (d'::d, 
-	     List.concat [
-	       [concat ["if (",downcast("ML_Option<"^ml_val^">",fr),".isNONE()) {"],
-		concat ["  ", to," = NULL;"],
-		concat ["} else {"],
-		concat ["  ", ml_val," ",n_opt,";"],
-		concat ["  ", n_opt," = ", downcast("ML_Option<"^ml_val^">",fr), ".ValOf(ctx);"]],
-	       map (fn x => "  " ^ x) c,
-	       [concat ["  ",to," = &",n,";"],
-		concat ["};"]]])
-	  end
-      | marshallType (fr,to,I.TS_Ref spec) p = let
-	  val n = gensym () 
-	  val (d,c) = marshallType (fr,n,spec) p
-	  val d' = mk_declaration (n,spec)
-	  in
-	    (d'::d,c @ [concat [to," = &",n,";"]]) 
-	  end
-(*
-      | marshallType (fr,to,I.TS_Array {spec,size}) p = let
-	  val (d,c) = marshallType ("<sub i from "^fr^">",to^"[i]",spec) p
-	  val size_bnd = str_constant (p,size)
-	  val alloc = case (size)
-			of I.E_Int _ => ""
-			 | _ => concat [to," = (<cast>) malloc (<size> * ",size_bnd,"); "]
-	in
-	  (d,concat [alloc,"for (int i=0; i < ",size_bnd,"; i++) ",c])
-	end
-*)
-      | marshallType (fr,to,I.TS_Sml (_, NONE)) p = ([],[concat [to," = ",fr, ";"]])
-      | marshallType (fr,to,I.TS_Sml (_, SOME ty)) p = ([],[concat [ty," ",to," = ",downcast(ty, fr),";"]])
-      | marshallType (fr,to,I.TS_App {oper=I.TS_Dep {id,id_spec,spec},app}) p = let
-	  val app' = case (app) 
-		       of I.E_Id (var) => I.E_String (ml_op_stub^(A.toString (var)))
-			| _ => fail ["GenerateRuntime.marshallType","Huh? not a E_Id..."]
-	  in
-	    marshallType (fr,to,spec) (p_add (p,(id,app')))
-	  end
-      | marshallType (fr,to,I.TS_Struct (fields)) p = let
-	  val fields = map (fn (I.Fld {spec,name,...}) => (A.toString name,spec)) fields
-	  fun mk_marshall ((name,spec),i) = marshallType (ml_sub(i,length fields,fr),"("^to^")."^name,spec) p_empty
-	  val marshalled = mapI mk_marshall fields
-	  fun proj1 l = map (fn (a,b) => a) l
-	  fun proj2 l = map (fn (a,b) => b) l
-	  in
-	    (List.concat (proj1 marshalled),
-	     List.concat (proj2 marshalled))
-	  end
-      | marshallType (fr,to,t) p = fail [
-	    "GenerateRuntime.marshallType", "unhandled type spec ",IIL.spec_to_string t
-	  ]
-      
-    fun unmarshallType (fr,to,I.TS_Id (s)) = unmarshallType (fr,to,findType (I.TS_Id (s)))
-      | unmarshallType (fr,to,I.TS_Real64) = ([], concat [to, " = ML_Real64(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Real32) = ([], concat [to, " = ML_Real64(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Int32)  = ([], concat [to, " = ML_Int32(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Int16)  = ([], concat [to, " = ML_Int32(ctx,",fr,");"])
-      | unmarshallType (fr,to,I.TS_Int8)   = ([], concat [to, " = ML_Int32(ctx,",fr,");"])
-(*
-      | unmarshallType (fr,to,I.TS_Word32) = ([], concat ["WORD_ALLOC (msp,",to,",",fr,");"])
-      | unmarshallType (fr,to,I.TS_Word16) = ([], concat ["WORD_ALLOC (msp,",to,",",fr,");"])
-      | unmarshallType (fr,to,I.TS_Word8)  = ([], concat ["WORD_ALLOC (msp,",to,",",fr,");"])
-*)
-      | unmarshallType (fr,to,I.TS_Int)    = ([], concat [to," = ML_Int(",fr,");"])
-      | unmarshallType (fr,to,I.TS_Word)   = ([], concat [to," = ML_Int(",fr,");"])
-      | unmarshallType (fr,to,I.TS_Bool)   = ([], concat [to," = ML_Int(",fr,");"])
-      | unmarshallType (fr,to,I.TS_Char)   = ([], concat [to," = ML_Int((int) ",fr,");"])
-      | unmarshallType (fr,to,I.TS_String) = ([], concat [to," = ML_String(ctx, ",fr,");"])
-(*    | unmarshallType (fr,to,I.TS_Option (I.TS_String)) = ([],concat [to," = <to_ml_opt_string> (",fr,");"]) *)
-(*    | unmarshallType (fr,to,I.TS_Ptr spec) = ([],concat [to," = PTR_CtoML (",fr,");"]) *)
-      | unmarshallType (fr,to,I.TS_Option(I.TS_Ref spec)) = let
-	  val (d,c) = unmarshallType (concat["*(", fr, ")"], to, spec)
-	  in 
-	    (d,c)
-	  end
-      | unmarshallType (fr,to,I.TS_Ref spec) = let
-	  val (d,c) = unmarshallType (concat["*(", fr, ")"], to, spec)
-	  in
-	    (d,c)
-	  end
-      | unmarshallType (fr, to, I.TS_Sml _) = ([], concat [to," = ",fr, ";"])
-      | unmarshallType (fr ,to, I.TS_Struct fields) = let
-	  val n = gensym ()
-	  val fields = map (fn (I.Fld {spec,name,...}) => (A.toString name,spec)) fields
-	  fun mk_unmarshall ((name, spec), i) = let
-		val (l, ty) = unmarshallType (concat["(", fr, ").", name], concat[n, "_", name], spec)
+    fun marshallParams specs = let
+	  fun mapi f l = let
+		fun mapf (i, []) = []
+		  | mapf (i, x::xs) = f(i, x) :: mapf(i+1, xs)
 		in
-		  (l, ty ^ "\n")
+		  mapf (0, l)
 		end
-	  val unmarshalled = mapI mk_unmarshall fields
-	  in (
-	    List.concat [
-		List.concat (map #1 unmarshalled),
-		map (fn (name, spec) => concat[ml_val, " ", n, "_", name]) fields
-	      ],
-	    concat [
-		concat (map #2 unmarshalled),
-		concat (makeTuple (map (fn (name, _) => n^"_"^name) fields, fn (s) => concat [to," = ",s,";"]))
-	      ]
-	  ) end
-      | unmarshallType (fr,to,t) = fail ["GenerateRuntime.unmarshallType",
-					       "unhandled type spec ",IIL.spec_to_string (t)]
+	  fun marshallParam (isTop, optTyName, pSpec, pName, rhs) = let
+		fun tyName ty = (case optTyName of NONE => ty | SOME ty' => Atom.toString ty')
+		fun initScalar (ty, name) = let
+		      val asgn = [pName, " = ", rhs, ".Val();"]
+		      in
+			if isTop
+			  then "  " :: tyName ty :: " " :: asgn
+			  else "  " :: asgn
+		      end
+		in
+print(concat[" marshallParam  (", Bool.toString isTop, ", _, ", IIL.spec_to_string pSpec, ", ", pName, ", ", rhs, ")\n"]);
+		  case pSpec
+		   of I.TS_Id s => marshallParam (isTop, SOME s, findType s, pName, rhs)
+		    | I.TS_Real64 => [initScalar("double", pName)]
+		    | I.TS_Real32 => [initScalar("float", pName)]
+		    | I.TS_Int32 => [initScalar("int32_t", pName)]
+		    | I.TS_Int16 => [initScalar("int16_t", pName)]
+		    | I.TS_Int8 => [initScalar("int8_t", pName)]
+		    | I.TS_Int => [initScalar("int", pName)]
+		    | I.TS_Word32 => [initScalar("uint32_t", pName)]
+		    | I.TS_Word16 => [initScalar("uint16_t", pName)]
+		    | I.TS_Word8 => [initScalar("uint8_t", pName)]
+		    | I.TS_Word => [initScalar("unsigned int", pName)]
+		    | I.TS_Bool => [initScalar("bool", pName)]
+		    | I.TS_Char => [initScalar("char", pName)]
+		    | I.TS_String => if isTop
+			then [["  const char *", pName, " = ", rhs, ".UnsafeCString();"]]
+			else [["  ", pName, " = ", rhs, ".UnsafeCString();"]]
+		    | I.TS_Option(I.TS_Ref spec) => [
+(* FIXME: what if isTop = false? *)
+			  ["  ", varDecl(idlToCXXType pSpec, pName), ";"],
+			  ["  if (", rhs, ".isNONE()) {"],
+			  ["    ", pName, " = 0;"],
+			  ["  } else {"],
+			  ["/*** FIXME ***/"],
+			  ["  }"]
+			]
+		    | I.TS_Ref spec => marshallParam (isTop, optTyName, spec, pName, rhs)
+		    | I.TS_Sml(_, NONE) => if isTop
+			then [["  ML_Value ", pName, " = ", rhs, ";"]]
+			else raise Fail "unexpected nested SML spec"
+		    | I.TS_Sml(_, SOME ty) => if isTop
+			then [["  ", ty, " ", pName, " = ", rhs, ";"]]
+			else raise Fail "unexpected nested SML spec"
+(*
+		    | I.TS_App{oper=I.TS_Dep{id,id_spec,spec},app} => ??
+*)
+		    | I.TS_Struct fields => let
+			val len = List.length fields
+			val fields = if len > maxFixedTuple
+			      then List.concat (mapi (marshallField' (pName, rhs)) fields)
+			      else List.concat (mapi (marshallField (pName, rhs)) fields)
+			in
+			  if isTop
+			    then let
+			      val dcl = (case optTyName
+				      of NONE => ["  ", varDecl(idlToCXXType pSpec, pName), ";"]
+				       | SOME ty => ["  ", Atom.toString ty, " ", pName, ";"]
+				    (* end case *))
+			      in
+				dcl :: fields
+			      end
+			    else fields
+			end
+		    | t => fail [
+			  "GenerateRuntime.marshallParams", "unhandled type spec ", IIL.spec_to_string t
+			]
+		  (* end case *)
+		end
+	(* marshall struct fields, where the C++ representation has precise type information *)
+	  and marshallField (lhs, rhs) (i, (I.Fld{spec, name})) = marshallParam (
+		false, NONE, spec,
+		concat[lhs, ".", Atom.toString name],
+		concat[rhs, ".Get", Int.toString(i+1), "(ctx)"])
+	(* marshall struct fields, where the C++ representation is ML_Tuple<N> *)
+	  and marshallField' (lhs, rhs) (i, (I.Fld{spec, name})) = let
+	      (* C++ type that represents the ML type of the field *)
+		val mlTy = cxxTyToString(idlToMLType spec)
+		in
+		  marshallParam (
+		    false, NONE, spec,
+		    concat[lhs, ".", Atom.toString name],
+		    concat[mlTy, "(", rhs, ".Get(ctx, ", Int.toString(i+1), "))"])
+		end
+	  in
+	    case specs
+	     of [] => []
+	      | [(pSpec, pName)] => marshallParam (true, NONE, pSpec, ml_in_stub ^ pName, "ml_param")
+	      | _ => let
+		  fun marshallElem (i, (pSpec, pName)) = marshallParam (
+			true, NONE, pSpec, ml_in_stub ^ pName,
+			concat["ml_param.Get", Int.toString(i+1), "(ctx)"])
+		  fun marshallElem' (i, (pSpec, pName)) = let
+		      (* C++ type that represents the ML type of the field *)
+			val mlTy = cxxTyToString(idlToMLType pSpec)
+			in
+			  marshallParam (
+			    true, NONE, pSpec, ml_in_stub ^ pName,
+			    concat[mlTy, "(ml_param.Get(ctx, ", Int.toString(i+1), "))"])
+			end
+		  val len = List.length specs
+		  in
+		    if len > maxFixedTuple
+		      then List.concat (mapi marshallElem' specs)
+		      else List.concat (mapi marshallElem specs)
+		  end
+	    (* end case *)
+	  end
+
+  (* unmarshall results *)
+    fun unmarshallResults specs = let
+	  val stms = ref[];
+	  fun unmarshallResult (pSpec, pName) = let
+		fun unboxed ty = concat[ty, "(", pName, ")"]
+		fun boxed ty = concat[ty, "(ctx, ", pName, ")"]
+		in
+print(concat[" unmarshallResult  (", IIL.spec_to_string pSpec, ", ", pName, ")\n"]);
+		  case pSpec
+		   of I.TS_Id s => unmarshallResult (findType s, pName)
+		    | I.TS_Real64 => boxed "ML_Real64"
+		    | I.TS_Real32 => boxed "ML_Real64"
+		    | I.TS_Int32 => boxed "ML_Int32"
+		    | I.TS_Int16 => unboxed "ML_Int"
+		    | I.TS_Int8 => unboxed "ML_Int"
+		    | I.TS_Int => unboxed "ML_Int"
+		    | I.TS_Word32 => boxed "ML_Word32"
+		    | I.TS_Word16 => unboxed "ML_Word"
+		    | I.TS_Word8 => unboxed "ML_Word"
+		    | I.TS_Word => unboxed "ML_Word"
+		    | I.TS_Bool => unboxed "ML_Bool"
+		    | I.TS_Char => unboxed "ML_Char"
+		    | I.TS_String => boxed "ML_String"
+		    | I.TS_Option(I.TS_Ref spec) => "" (* FIXME *)
+		    | I.TS_Ref spec => unmarshallResult (spec, pName) (* ?? *)
+		    | I.TS_Sml _ => pName
+(*
+		    | I.TS_App{oper=I.TS_Dep{id,id_spec,spec},app} => ??
+*)
+		    | I.TS_Struct fields => let
+			val len = List.length fields
+			fun unmarshallField (I.Fld{spec, name}) =
+			      unmarshallResult (spec, concat[pName, ".", Atom.toString name])
+			val fields = List.map unmarshallField fields
+			in
+			  if len > maxFixedTuple
+			    then let
+			      val mlTy = concat["ML_Tuple<", Int.toString len, ">"]
+			      val tmp = gensym ()
+			      val stm = [
+				      "  ", ml_val, " ", tmp, "[", Int.toString len, "] = {",
+				      concatSep(", ", fields), "};"
+				    ]
+			      in
+				stms := stm :: !stms;
+				concat[mlTy, "(ctx, ", tmp, ")"]
+			      end
+			    else let
+			      val mlTy = cxxTyToString(idlToMLType pSpec)
+			      in
+				concat[mlTy, "(", concatSep(", ", "ctx" :: fields), ")"] 
+			      end
+			end
+		    | t => fail [
+			  "GenerateRuntime.unmarshallResults", "unhandled type spec ", IIL.spec_to_string t
+			]
+		  (* end case *)
+		end
+	  val stm = (case specs
+		 of [] => ["  ML_Value result();"]
+		  | [(rSpec, rName)] =>
+		      ["  ", varDecl(idlToMLType rSpec, "result"), " = ", unmarshallResult (rSpec, rName), ";"]
+		  | _ => let
+		      val len = List.length specs
+		      val elems = concatSep(", ", List.map unmarshallResult specs)
+		      in
+			if len > maxFixedTuple
+			  then let
+			    val mlTy = concat["ML_Tuple<", Int.toString len, ">"]
+			    val tmp = gensym ()
+			    val stm = [
+				    "  ", ml_val, " ", tmp, "[", Int.toString len, "] = {",
+				    elems, "};"
+				  ]
+			    in
+			      stms := stm :: !stms;
+			      ["  ", mlTy, " result(ctx, ", tmp, ");"]
+			    end
+			  else let
+			    val mlTy = cxxTyToString(idlToTupleTy (List.map #1 specs))
+			    in
+			      ["  ", mlTy, " result(ctx, ", elems, ");"] 
+			    end
+		      end
+		(* end case *))
+	  in
+	    List.rev(stm :: !stms)
+	  end
 
   (* generate code for the wrapper of an operation in the IDL specification. *)
     fun output_operation os (a, oper as I.Oper{spec, params, context, ...}) = let
 	  val isVoid = (case spec of I.TS_Void => true | _ => false)
-	  fun on_spec (v1, v2) = (case spec of I.TS_Void => v1 | _ => v2 ())
 	  val n = A.toString a
 	  val _ = Verbose.message2 [" Processing operation: ", n]
 	(* filter out input and output parameters *)
-	  val inParams = List.filter (fn (I.Prm {dir,...}) => I.has_In dir) params
-	  val outParams = List.filter (fn (I.Prm {dir,...}) => I.has_Out dir) params
+	  val inParams = List.filter (fn (I.Prm{dir,...}) => I.has_In dir) params
+	  val outParams = List.filter (fn (I.Prm{dir,...}) => I.has_Out dir) params
+	(* the C++ type that matches the tuple of parameters *)
+	  val paramTy = idlToTupleTy (List.map (fn (I.Prm{spec, ...}) => spec) inParams)
 	  fun prmToString (I.Prm{name,...}) = A.toString name
 	  val names = map prmToString params
 	  val in_names = map prmToString inParams
 	  val out_names = map prmToString outParams
-	  fun mapDecl (I.Prm{name, spec, ...}) = [
-		  "  ", mk_declaration (ml_op_stub ^ (A.toString name), spec), ";"
-		]
-	  fun mapMarshall (I.Prm{name, spec, ...}) = let 
-		val n = A.toString name
-		in
-		  marshallType (ml_arg_stub^n, ml_op_stub^n, spec) p_empty
-		end
-	  fun mapUnmarshall (I.Prm{name, spec, ...}) = let
-		val n = A.toString name
-		in
-		  unmarshallType (ml_op_stub^n, ml_arg_stub^n, spec)
-		end
-	  val marshalled = map mapMarshall inParams
-	  val unmarshalled = if isVoid
-		then map mapUnmarshall outParams
-		else unmarshallType ("ml_opresult", "ml_argresult", spec) :: map mapUnmarshall outParams
-	  fun out_decl os dl = app (out os) (map (fn d => ["  ",d,";"]) dl)
-	  val results = if isVoid
-		then map (fn x => ml_arg_stub ^ x) out_names
-		else "ml_argresult" :: map (fn x => ml_arg_stub ^ x) out_names
-	  fun stripRef (I.TS_Ref (spec)) = spec
-	    | stripRef _ = Error.error ["Trying to ref-strip a non-ref output parameter"]
-	  fun mapStrippedOutDecl (I.Prm {name,spec,...}) = [
-		  "  ", mk_declaration (concat["out_", ml_op_stub, A.toString name], stripRef (spec)),
-		  ";"
-		]
-	  fun isSmlVal (I.TS_Id(s)) = isSmlVal(findType(I.TS_Id(s)))
-	    | isSmlVal (I.TS_Sml(_, SOME t)) = true
-	    | isSmlVal _ = false
-	  fun stripSmlVal l = List.filter (fn (I.Prm{spec, ...}) => not (isSmlVal spec)) l
 	  in
-	    out os [ml_val," ", ml_fun_stub, n, " (", ml_context, " *ctx,", ml_val, " v) {"];
-	    out os ["  ", ml_val, " ml_result;"];
-	    out os ["  ", ml_val, " ml_argresult;"];
-	    app (out os) (map (fn n => ["  ", ml_val, " ", ml_arg_stub, n, ";"]) names);
-	    app (out os) (map mapDecl (stripSmlVal inParams));
-	    app (out os) (map mapDecl (stripSmlVal outParams));
-	  (* hack to avoid allocating memory on the heap
-	   * one way to clean it up is to *not* make [out] parameters
-	   * automatic refs in the IIL, and deal with out parameters specially
-	   * in the argument list 
-	   *)
-	    app (out os) (map mapStrippedOutDecl outParams);
-	    app (out_decl os) (map #1 marshalled);
-	    app (out_decl os) (map #1 unmarshalled);
-	    (* second bit of the above mentionned hack *)
-	    app (out os)
-	      (map (fn n => [
-		  F.format "  %s%s = &out_%s%s;" [F.STR ml_op_stub, F.STR n, F.STR ml_op_stub, F.STR n]
-		]) out_names);
-	    case in_names
-	     of [] => ()
-	      | [x] => out os [F.format "  %s%s = v;" [F.STR ml_arg_stub, F.STR X]]
-	      | l => (
-		    out os [
-			"  ", ml_tuple (length l), "ml_arg_tuple = ", 
-			downcast(ml_tuple (length l), "v"), ";"
-		      ];
-		    appI (fn (x,i) => out os [
-			F.format "  %s%s = ml_arg_tuple.Get(ctx, %d);" 
-			  [F.STR ml_arg_stub, F.STR x, F.INT(i+1)
-		      ]]) l)
-	    (* end case *);
-	    app (out os) (map (fn c => ["  ",c]) (List.concat (#2 (ListPair.unzip marshalled))));
-	    out os [
-		"  ",
-		if isVoid then "" else mk_declaration ("ml_opresult = ", spec),
-		n," (", 
-	      (* pass context if need be *)
-		if (context) then concat ["ctx", case names of [] => "" | _ => ","] else "",
-		concatSep (", ", map (fn n => (ml_op_stub ^ n)) names), ");"
-	      ];
-	    app (out os) (map (fn (_,c) => ["  ",c]) unmarshalled);
-	    out os (makeTuple (results,fn (s) => concat ["  return ",s,";"]));
+	    out os [ml_val," ", ml_fun_stub, n, " (", ml_context, " *ctx, ", ml_val, " v) {"];
+	    if List.null inParams
+	      then ()
+	      else (
+		out os ["  ", cxxTyToString paramTy, " ml_param(v);"];
+		out os ["// marshall arguments"];
+		List.app (out os)
+		  (marshallParams
+		    (List.map (fn (I.Prm{spec, name, ...}) => (spec, Atom.toString name))
+		      inParams)));
+	  (* output variable declarations *)
+	    if List.null outParams
+	      then ()
+	      else (
+		out os ["// output parameters"];
+		List.app (out os)
+		  (List.map
+		    (fn (I.Prm{spec=I.TS_Ref spec, name, ...}) => [
+			  "  ", varDecl(idlToCXXType spec, ml_out_stub ^ Atom.toString name), ";"
+			])
+		      outParams));
+	  (* call *)
+	    out os ["// call operation"];
+	    let
+	    fun cvtParam (I.Prm{dir=I.In, spec=I.TS_Ref _, name, ...}) =
+		  concat ["&", ml_in_stub, Atom.toString name]
+	      | cvtParam (I.Prm{dir=I.In, name, ...}) = ml_in_stub ^ Atom.toString name
+	      | cvtParam (I.Prm{dir=I.InOut, spec=I.TS_Ref _, name, ...}) =
+		  concat ["&", ml_in_stub, Atom.toString name]
+	      | cvtParam (I.Prm{dir=I.Out, spec=I.TS_Ref _, name, ...}) =
+		  concat ["&", ml_out_stub, Atom.toString name]
+	    val args = List.map cvtParam params
+	  (* pass context if need be *)
+	    val args = if context then "ctx" :: args else args
+	    in
+	      out os [
+		  "  ",
+		  if isVoid then "" else varDecl (idlToCXXType spec, "ml_opresult") ^ " = ",
+		  n, " (", concatSep (", ", args), ");"
+		]
+	    end;
+	    let
+	    fun cvtResult (I.Prm{dir=I.Out, spec, name, ...}) = (spec, ml_out_stub ^ Atom.toString name)
+	      | cvtResult (I.Prm{spec, name, ...}) = (spec, ml_in_stub ^ Atom.toString name)
+	    val results = List.map cvtResult outParams
+	    val results = if isVoid then results else (spec, "ml_opresult") :: results
+	    in
+	      if List.null results
+		then out os ["  return ML_Tuple<0>();"]
+		else (
+		  out os ["// unmarshall results"];
+		  List.app (out os) (unmarshallResults results);
+		  out os ["  return result;"])
+	    end;
 	    out os ["}\n"]
 	  end
 

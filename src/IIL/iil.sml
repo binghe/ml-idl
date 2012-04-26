@@ -28,8 +28,7 @@ structure IIL = struct
                | E_Char of char
                | E_Id of A.atom
     
-  datatype field = Fld of {spec : type_spec,
-                           name : A.atom}
+  datatype field = Fld of {spec : type_spec, name : A.atom}
     
   (* TODO: need to inline nested structures? *)
   and type_spec = TS_Id of A.atom
@@ -52,29 +51,26 @@ structure IIL = struct
                 | TS_Option of type_spec
                 | TS_Struct of field list
                 | TS_StructTag of A.atom
-                | TS_Array of {spec: type_spec,
-                               size: exp}
-                | TS_Dep of {id: A.atom,
-                             id_spec: type_spec,
-                             spec: type_spec}
+                | TS_Array of {spec: type_spec, size: exp}
+                | TS_Dep of {id: A.atom, id_spec: type_spec, spec: type_spec}
                 | TS_Case of {disc: exp,
                               disc_spec: type_spec,
                               cases: (exp * type_spec) list,
                               default: type_spec option}
-                | TS_App of {oper: type_spec,
-                             app: exp}
+                | TS_App of {oper: type_spec, app: exp}
     (* for SML only, for now --- correct when parameterizing *)
                 | TS_Sml of string * string option (* sml_type, cpp_type *)
                 | TS_Int
                 | TS_Word
     
-  and param = Prm of {name : A.atom,
-                      spec : type_spec,
-                      dir : direction,
-                      value : exp option}
+  and param = Prm of {
+	  name : A.atom,	(* parameter name *)
+	  spec : type_spec,	(* parameter type spec *)
+	  dir : direction,	(* parameter direction *)
+	  value : exp option	(* ??? [always NONE] *)
+	}
 
-  and const = Const of {value : exp,
-                        spec : type_spec}
+  and const = Const of {value : exp, spec : type_spec}
 
   and oper = Oper of {context : bool,
                       exclude : bool,   (* if true, don't output protoype *)
