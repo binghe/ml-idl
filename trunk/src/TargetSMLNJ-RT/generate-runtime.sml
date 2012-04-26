@@ -189,7 +189,6 @@ structure GenerateRuntime : sig end =
 			  else "  " :: asgn
 		      end
 		in
-print(concat[" marshallParam  (", Bool.toString isTop, ", _, ", IIL.spec_to_string pSpec, ", ", pName, ", ", rhs, ")\n"]);
 		  case pSpec
 		   of I.TS_Id s => marshallParam (isTop, SOME s, findType s, pName, rhs)
 		    | I.TS_Real64 => [initScalar("double", pName)]
@@ -295,7 +294,6 @@ print(concat[" marshallParam  (", Bool.toString isTop, ", _, ", IIL.spec_to_stri
 		fun unboxed ty = concat[ty, "(", pName, ")"]
 		fun boxed ty = concat[ty, "(ctx, ", pName, ")"]
 		in
-print(concat[" unmarshallResult  (", IIL.spec_to_string pSpec, ", ", pName, ")\n"]);
 		  case pSpec
 		   of I.TS_Id s => unmarshallResult (findType s, pName)
 		    | I.TS_Real64 => boxed "ML_Real64"
