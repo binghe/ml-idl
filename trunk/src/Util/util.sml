@@ -21,11 +21,11 @@ structure Util =
     val i = ref (0)
   in
     fun gensym () = let
-      val i' = (!i)
-    in
-      i := (i' + 1);
-      "tmp_"^(Int.toString (i'))
-    end
+	  val i' = !i
+	  in
+	    i := (i' + 1);
+	    "tmp_"^ Int.toString i'
+	  end
   end
 
   (* convert a file name that might have "-" and "." characters to a CPP symbol.  For
@@ -55,9 +55,7 @@ structure Util =
     out os []
   end
     
-  fun concatSep (s,[]) = ""
-    | concatSep (s,[a]) = a
-    | concatSep (s,a1::a2::r) = a1^s^concatSep(s,a2::r)
+  fun concatSep (s, l) = String.concatWith s l
 
   fun stripString (s) = let
     val ss = Substring.full (s)
