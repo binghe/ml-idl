@@ -93,7 +93,7 @@ structure GenerateRuntime : sig end =
 	    | SOME st => (case S.find (st, s)
 		 of SOME(I.TypeDef{spec = I.TS_Id s, ...}) => findType s
 		  | SOME(I.TypeDef{spec, ...}) => spec
-		  | NONE => Error.error ["is not a type"]
+		  | NONE => Error.error [Atom.toString s, " is not a type"]
 		(* end case *))
 	  (* end case *))
 
@@ -110,7 +110,7 @@ structure GenerateRuntime : sig end =
 	    | I.TS_Word16 => T_Named "ML_Word"
 	    | I.TS_Word8 => T_Named "ML_Word"
 	    | I.TS_Word => T_Named "ML_Word"
-	    | I.TS_Bool => T_Named "ML_Int"
+	    | I.TS_Bool => T_Named "ML_Bool"
 	    | I.TS_Char => T_Named "ML_Int"
 	    | I.TS_String => T_Named "ML_String"
 	    | I.TS_Option(I.TS_Ref spec) => T_App("ML_Option", [idlToMLType spec])
