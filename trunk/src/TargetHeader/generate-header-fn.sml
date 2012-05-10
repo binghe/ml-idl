@@ -50,7 +50,7 @@ functor GenerateHeaderFn (
             | I.TS_Word32 => "unsigned int "^n
             | I.TS_Word16 => "unsigned int "^n
             | I.TS_Word8 => "unsigned int "^n
-            | I.TS_Bool => "int "^n
+            | I.TS_Bool => "bool "^n
             | I.TS_String => "const char *"^n
             | I.TS_Char => "char "^n
             | I.TS_Ref (spec) => type2str ("*"^n, spec)
