@@ -32,8 +32,9 @@ functor GenerateHeaderFn (
 		then str(Char.toUpper c)
 		else F.format "_0x%02x_" [F.INT(ord c)]
 	  val file' = String.translate tr file
+	  val ext = String.translate tr fileExt
 	  in
-	    concat["_", file', "_H_"]
+	    concat["_", file', "_", ext, "_"]
 	  end
 
     fun field2str (I.Fld{spec, name, ...}) =
