@@ -3,7 +3,11 @@
  * Translate an IDL parse tree into IIL
  *)
 
-structure IdlTranslate = struct
+structure IdlTranslate : sig
+
+    val translate : IdlParseTree.start * string -> IIL.iil
+
+  end = struct
 
   structure I = IIL
   structure D = IdlParseTree
@@ -18,19 +22,19 @@ structure IdlTranslate = struct
    * definition is in fact abstract, e.g.
    *   typedef struct t t_type;
    *)
-  val abstract_flag = ref (false)
+  val abstract_flag = ref false
 
-  val new_tag = let 
-    val counter = ref (0)
-  in
-    fn () => let
-      val v = !counter
-      val r = "__tag__"^(Int.toString (v))^"__"
-    in
-      counter := v+1;
-      A.atom r
-    end
-  end
+  val newTag = let 
+	val counter = ref 0
+	in
+	  fn () => let
+	    val v = !counter
+	    val r = concat["__tag__", Int.toString v, "__"]
+	    in
+	      counter := v+1;
+	      A.atom r
+	    end
+	end
 
   (* this ref cell holds an association of all the structure tags encountered, 
    * and their corresponding definitions. I'm not sure it will ever be needed, but
@@ -122,33 +126,33 @@ structure IdlTranslate = struct
 (*  convert word32 to words is a bit of work... *)
 
   (* FIXME: add some error checking here... *)
-  fun convert_constant (D.CT_Integer (D.SmlInt),D.CE_Integer (D.CE_Int i)) = I.E_Int (i)
-    | convert_constant (D.CT_Integer (D.SmlWord), D.CE_Integer (D.CE_Word w)) = I.E_Word (w)
-    | convert_constant (D.CT_Integer (D.SmlWord), D.CE_Integer (D.CE_Int i)) = I.E_Word (Word32.fromLargeInt (Int32.toLarge i))
-    | convert_constant (D.CT_Integer (D.Signed (D.Int)),D.CE_Integer (D.CE_Int i)) = I.E_Int (i)
-    | convert_constant (D.CT_Integer (D.Unsigned (D.UInt)),D.CE_Integer (D.CE_Word w)) = I.E_Word (w)
-    | convert_constant (D.CT_Integer (D.Unsigned (D.UInt)),D.CE_Integer (D.CE_Int i)) = I.E_Word (Word32.fromLargeInt (Int32.toLarge i))
-    | convert_constant (_,D.CE_String (s)) = I.E_String (s)
-    | convert_constant (_,D.CE_True) = I.E_Bool (true)
-    | convert_constant (_,D.CE_False) = I.E_Bool (false)
-    | convert_constant (_,D.CE_Null) = I.E_Int (0)    (* FIXME *)
-    | convert_constant (_,D.CE_Id (a)) = I.E_Int (0)  (* FIXME *)
-    | convert_constant (_,_) = fail ["IdlTranslate.convert_constant","Mismatched value and type"]
+  fun convert_constant (D.CT_Integer D.SmlInt, D.CE_Integer(D.CE_Int i)) = I.E_Int i
+    | convert_constant (D.CT_Integer D.SmlWord, D.CE_Integer(D.CE_Word w)) = I.E_Word w
+    | convert_constant (D.CT_Integer D.SmlWord, D.CE_Integer(D.CE_Int i)) = I.E_Word(Word32.fromLargeInt (Int32.toLarge i))
+    | convert_constant (D.CT_Integer(D.Signed D.Int), D.CE_Integer(D.CE_Int i)) = I.E_Int i
+    | convert_constant (D.CT_Integer(D.Unsigned D.UInt), D.CE_Integer(D.CE_Word w)) = I.E_Word w
+    | convert_constant (D.CT_Integer(D.Unsigned D.UInt), D.CE_Integer(D.CE_Int i)) = I.E_Word(Word32.fromLargeInt (Int32.toLarge i))
+    | convert_constant (_, D.CE_String s) = I.E_String s
+    | convert_constant (_, D.CE_True) = I.E_Bool true
+    | convert_constant (_, D.CE_False) = I.E_Bool false
+    | convert_constant (_, D.CE_Null) = I.E_Int 0  (* FIXME *)
+    | convert_constant (_, D.CE_Id a) = I.E_Int 0  (* FIXME *)
+    | convert_constant (_, _) = fail ["IdlTranslate.convert_constant","Mismatched value and type"]
     
-  fun convert_enum (sl) = let
-    fun f (D.Id (s),(n,l)) = (n+1,(s,n)::l)
-      | f (D.IdValue (s,exp), (n,l)) = (n,(s,eval_int_exp (exp))::l)
-    val (_,l) = foldr f (0:Int32.int,[]) sl
-  in 
-    l (* map (fn (s,v) => (s,v)) l *)
-  end
+  fun convert_enum sl = let
+	fun f (D.Id s, (n, l)) = (n+1, (s,n)::l)
+	  | f (D.IdValue (s, exp), (n,l)) = (n, (s, eval_int_exp exp)::l)
+	val (_, l) = foldr f (0:Int32.int, []) sl
+	in 
+	  l (* map (fn (s,v) => (s,v)) l *)
+	end
 
-  fun get_ptr_attr (A_Ptr) = SOME (A_Ptr)
-    | get_ptr_attr (A_Ref) = SOME (A_Ref)
-    | get_ptr_attr (A_Unique) = SOME (A_Unique)
+  fun get_ptr_attr (A_Ptr) = SOME A_Ptr
+    | get_ptr_attr (A_Ref) = SOME A_Ref
+    | get_ptr_attr (A_Unique) = SOME A_Unique
     | get_ptr_attr _ = NONE
 
-  fun get_string_attr (A_String) = SOME (A_String)
+  fun get_string_attr (A_String) = SOME A_String
     | get_string_attr _ = NONE
 
   fun get_size_attr (A_SizeIs v) = SOME (A_SizeIs v)
@@ -158,7 +162,7 @@ structure IdlTranslate = struct
     | get_dir_attr (A_Out) = SOME (A_Out)
     | get_dir_attr _ = NONE
 
-  fun get_type_attr (A_SwitchType (ty)) = SOME (A_SwitchType (ty))
+  fun get_type_attr (A_SwitchType ty) = SOME (A_SwitchType ty)
     | get_type_attr _ = NONE 
 
   fun get_union_attr (A_SwitchIs v) = SOME (A_SwitchIs v)
@@ -182,22 +186,22 @@ structure IdlTranslate = struct
        | _ => Error.error ["Multiple pointer attributes"]
 
   fun extract_sml_type [] = NONE
-    | extract_sml_type ((A_SmlType (t))::xs) = SOME (t)
-    | extract_sml_type (_::xs) = extract_sml_type (xs)
+    | extract_sml_type ((A_SmlType t)::xs) = SOME t
+    | extract_sml_type (_::xs) = extract_sml_type xs
 
   fun extract_cpp_type [] = NONE
-    | extract_cpp_type ((A_CppType (t))::xs) = SOME (t)
-    | extract_cpp_type (_::xs) = extract_cpp_type (xs)
+    | extract_cpp_type ((A_CppType t)::xs) = SOME t
+    | extract_cpp_type (_::xs) = extract_cpp_type xs
 
   fun extract_type_attrs l = mapP get_type_attr l    
 
   fun extract_size_is l = 
     case (mapP get_array_attr l)
       of [] => NONE
-       | [A_SizeIs ([D.Var v])] => SOME (v)
+       | [A_SizeIs[D.Var v]] => SOME v
        | _ => Error.error ["Unrecognized array attribute or multiple/unrecognized variables"]
 
-  fun get_abstract_attr (A_Abstract) = SOME (A_Abstract)
+  fun get_abstract_attr A_Abstract = SOME A_Abstract
     | get_abstract_attr _ = NONE
 
   fun has_abstract_attr l = 
@@ -206,7 +210,7 @@ structure IdlTranslate = struct
        | [_] => true
        | _ => fail ["IdlTranslate.has_abstract_attr","Multiple [abstract] attributes"]
 
-  fun get_exclude_attr (A_Exclude) = SOME (A_Exclude)
+  fun get_exclude_attr A_Exclude = SOME A_Exclude
     | get_exclude_attr _ = NONE
 
   fun has_exclude_attr l = 
@@ -232,15 +236,15 @@ structure IdlTranslate = struct
     | has_context_attr (_::xs) = has_context_attr (xs)
 
   and has_call_attr [] = NONE
-    | has_call_attr ((A_Call s)::xs) = SOME (s)
+    | has_call_attr ((A_Call s)::xs) = SOME s
     | has_call_attr (_::xs) = has_call_attr (xs)
 
   and has_pre_attr [] = NONE
-    | has_pre_attr ((A_Pre s)::xs) = SOME (s)
+    | has_pre_attr ((A_Pre s)::xs) = SOME s
     | has_pre_attr (_::xs) = has_pre_attr (xs)
 
   and has_post_attr [] = NONE
-    | has_post_attr ((A_Post s)::xs) = SOME (s)
+    | has_post_attr ((A_Post s)::xs) = SOME s
     | has_post_attr (_::xs) = has_post_attr (xs)
 
   and convert_dir_attr l = let
@@ -443,7 +447,7 @@ structure IdlTranslate = struct
     | convert_simple_type_spec (D.TS_Id (a)) = I.TS_Id (a)
     | convert_simple_type_spec (_) = fail ["convert_simple_type_spec","unrecognized type"]
 
-  and convert_constructed_type_spec (_,D.Struct (fields)) = convert_struct_type (new_tag (),fields)
+  and convert_constructed_type_spec (_,D.Struct (fields)) = convert_struct_type (newTag (),fields)
     | convert_constructed_type_spec (ts,D.Union (ut)) = convert_union_type (ts,ut)
     | convert_constructed_type_spec (_,D.Enum (ids)) = fail ["IdlTranslate.convert_constructed_type_spec",
                                                                    "Enums not yet supported"]
@@ -464,7 +468,7 @@ structure IdlTranslate = struct
 
   and convert_struct_type (tag,fields) = I.TS_Struct (List.concat (map convert_field fields))
 
-  and convert_union_type (ts,D.EUnion (switch, a, name, body)) = convert_union (ts,new_tag(),switch,a,name,body)
+  and convert_union_type (ts,D.EUnion (switch, a, name, body)) = convert_union (ts,newTag(),switch,a,name,body)
     | convert_union_type (_,D.NEUnion _) = fail ["convert_union_type","non-encapsulated union"]
     
   and convert_tagged_union (ts,D.TaggedEUnion (tag,switch,a,name,body)) = convert_union (ts,tag,switch,
@@ -602,10 +606,10 @@ structure IdlTranslate = struct
         [I.Operation (name,oper)]
       end
 
-  fun translate (D.PT (l),file) = let
+  fun translate (D.PT l, file) = let
     (* initialize tagged table *)
     val _ = taggedTable := []
-    val file_path = OS.Path.dir (file)
+    val file_path = OS.Path.dir file
     val struct_name = ref NONE
     val sig_name = ref NONE
     val clib_name = ref NONE
@@ -626,12 +630,12 @@ structure IdlTranslate = struct
     end
     fun f (D.TopDecl (exp),decls) = (convert_declaration (exp))@decls
       | f (D.Import _,decls) = decls
-      | f (D.StructName (s),decls) = (struct_name := SOME (Util.stripString (s)); decls)
-      | f (D.SigName (s),decls) = (sig_name := SOME (Util.stripString (s)); decls)
-      | f (D.CLibName (s),decls) = (clib_name := SOME (Util.stripString (s)); decls)
-      | f (D.CLibVersion (s),decls) = (clib_version := SOME (Util.stripString (s)); decls)
-      | f (D.CLibDate (s),decls) = (clib_date := SOME (Util.stripString (s)); decls)
-      | f (D.CppQuote (s),decls) = (I.CppQuote (convert_cpp_quote (s)))::decls
+      | f (D.StructName (s),decls) = (struct_name := SOME (Util.stripString s); decls)
+      | f (D.SigName (s),decls) = (sig_name := SOME (Util.stripString s); decls)
+      | f (D.CLibName (s),decls) = (clib_name := SOME (Util.stripString s); decls)
+      | f (D.CLibVersion (s),decls) = (clib_version := SOME (Util.stripString s); decls)
+      | f (D.CLibDate (s),decls) = (clib_date := SOME (Util.stripString s); decls)
+      | f (D.CppQuote (s),decls) = (I.CppQuote (convert_cpp_quote s))::decls
     val decls = foldr f [] l 
     fun f (I.Type (name,td),st) = S.insert (st,name,td)
       | f (_,st) = st
@@ -647,7 +651,7 @@ structure IdlTranslate = struct
                       clib_date = !clib_date,
                       decls = decls}
     in
-      Verbose.verbose (2,fn () => IIL.print (i)); i
+      Verbose.verbose (2, fn () => IIL.output (TextIO.stdOut, i)); i
     end
   end
 

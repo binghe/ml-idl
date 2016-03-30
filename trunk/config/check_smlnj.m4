@@ -16,7 +16,7 @@ dnl
 dnl @version $Id: check_smlnj.m4,v 1.1.1.1 2006/04/11 05:17:06 jhr Exp $
 dnl @author John Reppy <jhr@cs.uchicago.edu>
 dnl
-AC_DEFUN(CHECK_SMLNJ, [
+AC_DEFUN([CHECK_SMLNJ], [
 dnl
 dnl first we check for the existence of SML/NJ
 dnl

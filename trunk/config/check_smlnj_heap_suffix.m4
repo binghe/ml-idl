@@ -14,7 +14,7 @@ dnl
 dnl @version $Id: check_smlnj_heap_suffix.m4,v 1.2 2007/05/09 17:48:52 jhr Exp $
 dnl @author John Reppy <http://www.cs.uchicago.edu/~jhr>
 dnl
-AC_DEFUN(CHECK_SMLNJ_HEAP_SUFFIX, [
+AC_DEFUN([CHECK_SMLNJ_HEAP_SUFFIX], [
   AC_REQUIRE([AC_CANONICAL_HOST])
   case ${host_cpu}:${host_os} in
     alpha*:osf3*)	SMLNJ_ARCH=alpha32x;	SMLNJ_OPSYS=osf1;;

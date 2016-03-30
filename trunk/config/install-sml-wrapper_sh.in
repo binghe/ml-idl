@@ -40,9 +40,12 @@ XXXX
 
 #install the script and heap image
 #
+if test ! -d $INSTALL_DIR ; then
+  mkdir -p $INSTALL_DIR || exit 1
+fi
 $INSTALL $TARGET $INSTALL_DIR/$TARGET || exit 1
 if test ! -d $INSTALL_HEAP_DIR ; then
-  mkdir $INSTALL_HEAP_DIR || exit 1
+  mkdir -p $INSTALL_HEAP_DIR || exit 1
 fi
 $INSTALL_DATA $HEAP_IMAGE $INSTALL_HEAP_IMAGE || exit 1
 
