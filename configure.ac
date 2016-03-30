@@ -1,16 +1,15 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl COPYRIGHT (c) 2007 Ths SML/NJ Fellowship.
+dnl COPYRIGHT (c) 2016 The SML/NJ Fellowship (smlnj.org)
 dnl All rights reserved.
 dnl
 dnl Configuration for the ml-idl tool
 dnl
 
-dnl NOTE: MANTICORE_DIST_VERSION is an M4 variable defined in config/aclocal.m4
-dnl
 AC_INIT(ml-idl,1.0,http://smlnj.org)
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.60)
+AC_COPYRIGHT([[COPYRIGHT (c) 2016 The SML/NJ Fellowship (smlnj.org)]])
 AC_CONFIG_AUX_DIR(config)
 
 dnl
@@ -22,6 +21,7 @@ sinclude(config/check_smlnj_heap_suffix.m4)
 AC_PREFIX_DEFAULT(/usr/local)
 
 AC_PROG_INSTALL
+AC_PROG_MAKE_SET
 AC_PATH_PROGS(CPP_CMD, cpp, no, $PATH:/lib)
 if test x$CPP_CMD = xno ; then
   AC_MSG_ERROR([no cpp found])

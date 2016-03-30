@@ -1,6 +1,6 @@
 # root Makefile for ml-idl tool
 #
-# COPYRIGHT (c) 2007 The SML/NJ Fellowship
+# COPYRIGHT (c) 2016 The SML/NJ Fellowship
 #
 # @configure_input@
 #
@@ -9,6 +9,9 @@ SHELL =			/bin/sh
 
 build:
 	(cd src; make build)
+
+local-install:
+	(cd src; make local-install)
 
 install:
 	(cd src; make install)

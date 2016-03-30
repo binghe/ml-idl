@@ -167,124 +167,121 @@ structure GenerateRuntime : sig end =
 	       ]
 	  (* end case *))
 
+    fun marshallParam (pSpec, pName, rhs) = let
+	  fun marshall (isTop, tySpec, cxxTy, name, rhs) = (case tySpec
+		 of I.TS_Id s => marshall (isTop, findType s, cxxTy, name, rhs)
+		  | I.TS_String => if isTop
+		      then [["  const char *", name, " = ", rhs, ".UnsafeCString();"]]
+		      else [["  ", pName, " = ", rhs, ".UnsafeCString();"]]
+		  | I.TS_Option(I.TS_Ref spec) => let
+		      val T_Ptr valueTy = cxxTy
+		      val value = gensym ()  (* a variable to hold the value *)
+		      val tmp1 = gensym ()
+		      val tmp2 = gensym ()
+		      val unpackSome =
+			    List.map (fn ln => "  " :: ln)
+			      (marshall (false, spec, cxxTy, name, tmp2))
+		      in
+			[
+			  ["  ", varDecl(valueTy, value), ";"],
+(* FIXME: how to handle the decl if isTop = false? *)
+			  ["  ", varDecl(idlToCXXType tySpec, name), ";"],
+			  ["  ", varDecl(idlToMLType tySpec, tmp1), " = ", rhs, ";"],
+			  ["  if (", tmp1, ".isNONE()) {"],
+			  ["    ", name, " = nullptr;"],
+			  ["  } else {"],
+			  ["    ", name, " = &", value, ";"],
+			  ["    ", varDecl(idlToMLType spec, tmp2), " = ", tmp1, ".ValOf(ctx);"]
+			] @ unpackSome @ [["  }"]]
+		      end
+		  | I.TS_Ref spec => let
+		    (* we strip off the pointer, since we want to pass by reference *)
+		      val T_Ptr valueTy = cxxTy
+		      in
+			marshall (isTop, spec, valueTy, name, rhs)
+		      end
+		  | I.TS_Sml(_, NONE) => if isTop
+		      then [["  ML_Value ", name, " = ", rhs, ";"]]
+		      else raise Fail "unexpected nested SML spec"
+		  | I.TS_Sml(_, SOME ty) => if isTop
+		      then [["  ", ty, " ", name, " = ", rhs, ";"]]
+		      else raise Fail "unexpected nested SML spec"
+(*
+		  | I.TS_App{oper=I.TS_Dep{id,id_spec,spec},app} => ??
+*)
+		  | I.TS_Struct fields => let
+		      val len = List.length fields
+		      val fields = if len > maxFixedTuple
+			    then List.concat (List.mapi (marshallField' (cxxTy, name, rhs)) fields)
+			    else List.concat (List.mapi (marshallField (cxxTy, name, rhs)) fields)
+		      in
+			if isTop
+			  then let
+			    val dcl = ["  ", varDecl(cxxTy, pName), ";"]
+			    in
+			      dcl :: fields
+			    end
+			  else fields
+		      end
+		  | _ => let (* base case for scalar types *)
+		      val asgn = [name, " = ", rhs, ".Val();"]
+		      in
+			if isTop
+			  then ["  " :: cxxTyToString cxxTy :: " " :: asgn]
+			  else ["  " :: asgn]
+		      end
+		(* end case *))
+	(* marshall struct fields, where the C++ representation has precise type information *)
+	  and marshallField (lhsTy, lhs, rhs) = let
+		val selOp = (case lhsTy of T_Ptr _ => "->" | _ => ".")
+		in
+		  fn (i, (I.Fld{spec, name})) => marshall (
+		    false, spec, idlToMLType spec,
+		    concat[lhs, selOp, Atom.toString name],
+		    concat[rhs, ".Get", Int.toString(i+1), "(ctx)"])
+		end
+	(* marshall struct fields, where the C++ representation is ML_Tuple<N> *)
+	  and marshallField' (lhsTy, lhs, rhs) = let
+		val selOp = (case lhsTy of T_Ptr _ => "->" | _ => ".")
+		in
+		  fn (i, (I.Fld{spec, name})) => let
+		  (* C++ class that represents the ML type of the field *)
+		    val mlTy = cxxTyToString(idlToMLType spec)
+		    in
+		      marshall (
+			false, spec, idlToCXXType spec,
+			concat[lhs, selOp, Atom.toString name],
+			concat[mlTy, "(", rhs, ".Get(ctx, ", Int.toString(i+1), "))"])
+		    end
+		end
+	  in
+	    marshall (true, pSpec, idlToCXXType pSpec, pName, rhs)
+	  end
+
   (* marshall data from ML representation to native C++ representation.  The source of the
    * data is assumed to be a C++ object whose type is defined by idlToTupleTy.  The variable
    * ml_param is the name of the source object.  The destination is specified as a list of
    * (idl-type, name) pairs.
    *)
-    fun marshallParams specs = let
-	  fun mapi f l = let
-		fun mapf (i, []) = []
-		  | mapf (i, x::xs) = f(i, x) :: mapf(i+1, xs)
-		in
-		  mapf (0, l)
-		end
-	  fun marshallParam (isTop, optTyName, pSpec, pName, rhs) = let
-		fun tyName ty = (case optTyName of NONE => ty | SOME ty' => Atom.toString ty')
-		fun initScalar (ty, name) = let
-		      val asgn = [pName, " = ", rhs, ".Val();"]
-		      in
-			if isTop
-			  then "  " :: tyName ty :: " " :: asgn
-			  else "  " :: asgn
-		      end
-		in
-		  case pSpec
-		   of I.TS_Id s => marshallParam (isTop, SOME s, findType s, pName, rhs)
-		    | I.TS_Real64 => [initScalar("double", pName)]
-		    | I.TS_Real32 => [initScalar("float", pName)]
-		    | I.TS_Int32 => [initScalar("int32_t", pName)]
-		    | I.TS_Int16 => [initScalar("int16_t", pName)]
-		    | I.TS_Int8 => [initScalar("int8_t", pName)]
-		    | I.TS_Int => [initScalar("int", pName)]
-		    | I.TS_Word32 => [initScalar("uint32_t", pName)]
-		    | I.TS_Word16 => [initScalar("uint16_t", pName)]
-		    | I.TS_Word8 => [initScalar("uint8_t", pName)]
-		    | I.TS_Word => [initScalar("unsigned int", pName)]
-		    | I.TS_Bool => [initScalar("bool", pName)]
-		    | I.TS_Char => [initScalar("char", pName)]
-		    | I.TS_String => if isTop
-			then [["  const char *", pName, " = ", rhs, ".UnsafeCString();"]]
-			else [["  ", pName, " = ", rhs, ".UnsafeCString();"]]
-		    | I.TS_Option(I.TS_Ref spec) => [
-(* FIXME: what if isTop = false? *)
-			  ["  ", varDecl(idlToCXXType pSpec, pName), ";"],
-			  ["  if (", rhs, ".isNONE()) {"],
-			  ["    ", pName, " = 0;"],
-			  ["  } else {"],
-			  ["/*** FIXME ***/"],
-			  ["  }"]
-			]
-		    | I.TS_Ref spec => marshallParam (isTop, optTyName, spec, pName, rhs)
-		    | I.TS_Sml(_, NONE) => if isTop
-			then [["  ML_Value ", pName, " = ", rhs, ";"]]
-			else raise Fail "unexpected nested SML spec"
-		    | I.TS_Sml(_, SOME ty) => if isTop
-			then [["  ", ty, " ", pName, " = ", rhs, ";"]]
-			else raise Fail "unexpected nested SML spec"
-(*
-		    | I.TS_App{oper=I.TS_Dep{id,id_spec,spec},app} => ??
-*)
-		    | I.TS_Struct fields => let
-			val len = List.length fields
-			val fields = if len > maxFixedTuple
-			      then List.concat (mapi (marshallField' (pName, rhs)) fields)
-			      else List.concat (mapi (marshallField (pName, rhs)) fields)
-			in
-			  if isTop
-			    then let
-			      val dcl = (case optTyName
-				      of NONE => ["  ", varDecl(idlToCXXType pSpec, pName), ";"]
-				       | SOME ty => ["  ", Atom.toString ty, " ", pName, ";"]
-				    (* end case *))
-			      in
-				dcl :: fields
-			      end
-			    else fields
-			end
-		    | t => fail [
-			  "GenerateRuntime.marshallParams", "unhandled type spec ", IIL.spec_to_string t
-			]
-		  (* end case *)
-		end
-	(* marshall struct fields, where the C++ representation has precise type information *)
-	  and marshallField (lhs, rhs) (i, (I.Fld{spec, name})) = marshallParam (
-		false, NONE, spec,
-		concat[lhs, ".", Atom.toString name],
-		concat[rhs, ".Get", Int.toString(i+1), "(ctx)"])
-	(* marshall struct fields, where the C++ representation is ML_Tuple<N> *)
-	  and marshallField' (lhs, rhs) (i, (I.Fld{spec, name})) = let
+    fun marshallParams [] = []
+      | marshallParams [(pSpec, pName)] = marshallParam (pSpec, ml_in_stub ^ pName, "ml_param")
+      | marshallParams specs = let
+	  fun marshallElem (i, (pSpec, pName)) = marshallParam (
+		pSpec, ml_in_stub ^ pName,
+		concat["ml_param.Get", Int.toString(i+1), "(ctx)"])
+	  fun marshallElem' (i, (pSpec, pName)) = let
 	      (* C++ type that represents the ML type of the field *)
-		val mlTy = cxxTyToString(idlToMLType spec)
+		val mlTy = cxxTyToString(idlToMLType pSpec)
 		in
 		  marshallParam (
-		    false, NONE, spec,
-		    concat[lhs, ".", Atom.toString name],
-		    concat[mlTy, "(", rhs, ".Get(ctx, ", Int.toString(i+1), "))"])
+		    pSpec, ml_in_stub ^ pName,
+		    concat[mlTy, "(ml_param.Get(ctx, ", Int.toString(i+1), "))"])
 		end
+	  val len = List.length specs
 	  in
-	    case specs
-	     of [] => []
-	      | [(pSpec, pName)] => marshallParam (true, NONE, pSpec, ml_in_stub ^ pName, "ml_param")
-	      | _ => let
-		  fun marshallElem (i, (pSpec, pName)) = marshallParam (
-			true, NONE, pSpec, ml_in_stub ^ pName,
-			concat["ml_param.Get", Int.toString(i+1), "(ctx)"])
-		  fun marshallElem' (i, (pSpec, pName)) = let
-		      (* C++ type that represents the ML type of the field *)
-			val mlTy = cxxTyToString(idlToMLType pSpec)
-			in
-			  marshallParam (
-			    true, NONE, pSpec, ml_in_stub ^ pName,
-			    concat[mlTy, "(ml_param.Get(ctx, ", Int.toString(i+1), "))"])
-			end
-		  val len = List.length specs
-		  in
-		    if len > maxFixedTuple
-		      then List.concat (mapi marshallElem' specs)
-		      else List.concat (mapi marshallElem specs)
-		  end
-	    (* end case *)
+	    if len > maxFixedTuple
+	      then List.concat (List.mapi marshallElem' specs)
+	      else List.concat (List.mapi marshallElem specs)
 	  end
 
   (* unmarshall results *)
@@ -309,7 +306,7 @@ structure GenerateRuntime : sig end =
 		    | I.TS_Bool => unboxed "ML_Bool"
 		    | I.TS_Char => unboxed "ML_Char"
 		    | I.TS_String => boxed "ML_String"
-		    | I.TS_Option(I.TS_Ref spec) => "" (* FIXME *)
+		    | I.TS_Option(I.TS_Ref spec) => "<FIXME>" (* FIXME *)
 		    | I.TS_Ref spec => unmarshallResult (spec, pName) (* ?? *)
 		    | I.TS_Sml _ => pName
 (*

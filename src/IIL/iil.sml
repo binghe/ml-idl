@@ -1,6 +1,6 @@
 (* iil.sml
  *
- * COPYRIGHT (c) 2012 The Fellowship of SML/NJ (http://www.smlnj.org)
+ * COPYRIGHT (c) 2016 The Fellowship of SML/NJ (http://www.smlnj.org)
  * All rights reserved.
  *
  * IDL internal language.
@@ -138,42 +138,47 @@ structure IIL = struct
     | spec_to_string (TS_Ref (ts)) = concat ["ref ",spec_to_string (ts)]
     | spec_to_string (TS_Ptr (ts)) = concat ["ptr ",spec_to_string (ts)]
     | spec_to_string (TS_Option (ts)) = concat ["opt ",spec_to_string (ts)]
-    | spec_to_string (TS_Struct fields) = concat ["{",Util.concatSep (",",map (fn (Fld {name,spec}) => 
-                                                                               concat [A.toString (name),":",
-                                                                                       spec_to_string (spec)]) fields),
-                                                  "}"]
-    | spec_to_string (TS_StructTag (a)) = concat ["struct ",A.toString (a)]
-    | spec_to_string (TS_Array {spec,size}) = concat [spec_to_string (spec)," [",exp_to_string (size),"]"]
-    | spec_to_string (TS_Dep {id,id_spec,spec}) = concat ["dep ",A.toString (id),":",spec_to_string (id_spec),".",
-                                                          spec_to_string (spec)]
+    | spec_to_string (TS_Struct fields) = concat [
+	  "{",
+	  String.concatWithMap ","
+	    (fn (Fld{name, spec}) => concat [A.toString name, ":", spec_to_string spec])
+	      fields,
+	  "}"
+	]
+    | spec_to_string (TS_StructTag a) = concat ["struct ", A.toString a]
+    | spec_to_string (TS_Array {spec,size}) =
+	concat [spec_to_string (spec)," [",exp_to_string (size),"]"]
+    | spec_to_string (TS_Dep {id,id_spec,spec}) = concat [
+	  "dep ",A.toString (id),":",spec_to_string (id_spec),".",
+	  spec_to_string (spec)
+	]
     | spec_to_string (TS_Case _) = "<case>"
-    | spec_to_string (TS_App {oper,app}) = concat ["(",spec_to_string (oper),") ",exp_to_string (app)]
-    | spec_to_string (TS_Sml (str, NONE)) = concat ["sml <",str,">"]
-    | spec_to_string (TS_Sml (str, SOME ty)) = concat ["sml <",str,", ",ty,">"]
+    | spec_to_string (TS_App {oper, app}) =
+	concat ["(",spec_to_string (oper),") ", exp_to_string app]
+    | spec_to_string (TS_Sml(str, NONE)) = concat ["sml <",str,">"]
+    | spec_to_string (TS_Sml(str, SOME ty)) = concat ["sml <",str,", ",ty,">"]
     | spec_to_string (TS_Int) = "int"
     | spec_to_string (TS_Word) = "word"
 
-  fun oper_to_string (spec,params) = let
-    fun map_param (Prm {name,spec,dir,value}) = concat [case (dir)
-                                                          of In => "in "
-                                                           | Out => "out ",
-                                                        A.toString (name),
-                                                        ":",
-                                                        spec_to_string (spec)]
-  in
-    concat ["(",Util.concatSep (",",map map_param params),") -> ",spec_to_string (spec)]
-  end
+  fun oper_to_string (spec, params) = let
+	fun map_param (Prm{name, spec, dir, value}) = concat [
+		case dir of In => "in " | Out => "out ",
+		A.toString (name), ":", spec_to_string spec
+	      ]
+	in
+	  concat ["(", Util.concatSep (",", map map_param params),") -> ", spec_to_string spec]
+	end
 
-
-  fun print (IIL {decls,...}) = let
-    fun print' (name,str) = 
-      TextIO.print (concat [" ",A.toString name, " : ",str,"\n"])
-    fun decl (Type (name,TypeDef {spec,...})) = print' (name,spec_to_string (spec))
-      | decl (Constant (name,_)) = print' (name,"CONSTANT")
-      | decl (Operation (name,Oper {spec,params,...})) = print' (name,oper_to_string (spec,params))
-      | decl _ = ()
-  in
-    app decl decls
-  end
+  fun output (outS, IIL{decls, ...}) = let
+	fun pr (name, str) = 
+	      TextIO.output (outS, concat [" ", A.toString name, " : ",str, "\n"])
+	fun decl (Type (name, TypeDef{spec, ...})) = pr (name, spec_to_string spec)
+	  | decl (Constant (name, _)) = pr (name, "CONSTANT")
+	  | decl (Operation (name, Oper {spec,params,...})) =
+	      pr (name, oper_to_string (spec, params))
+	  | decl _ = ()
+	in
+	  app decl decls
+	end
 
 end
